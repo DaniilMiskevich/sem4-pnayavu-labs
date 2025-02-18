@@ -1,0 +1,19 @@
+{
+    "init": {
+        "cmds": [
+            "export BUILD=./build/",
+            "export SRC=./src/"
+        ]
+    },
+    "tasks": {
+        "run": {
+            "icon": "󰐊",
+            "desc": "Build and run the project",
+            "cmd": "javac $SRC/Main.java -d $BUILD; java --class-path $BUILD Main $USER"
+        },
+        "clean": {
+            "icon": "󰃢",
+            "cmd": "rm -r $BUILD/*"
+        }
+    }
+}
