@@ -1,0 +1,14 @@
+{
+    "tasks": {
+        "run": {
+            "icon": "󰐊",
+            "desc": "Build and run the project",
+            "cmd": "./gradlew bootRun"
+        },
+        "clean": {
+            "icon": "󰃢",
+            "desc": "Delete the build directory",
+            "cmd": "./gradlew clean"
+        }
+    }
+}
