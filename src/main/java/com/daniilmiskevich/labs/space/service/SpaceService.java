@@ -10,38 +10,29 @@ import com.daniilmiskevich.labs.space.repository.SpaceRepository;
 
 @Service
 public class SpaceService {
-    public class InvalidNameException extends RuntimeException {
-        public InvalidNameException(String name) {
-            super(String.format("Invalid name: '%s'.", name));
-        }
-    }
 
-    public class InvalidQueryException extends RuntimeException {
-        public InvalidQueryException(String query) {
-            super(String.format("Invalid query: '%s'.", query));
-        }
-    }
+    private final SpaceRepository repository;
 
     public SpaceService(SpaceRepository repository) {
         this.repository = repository;
     }
-
-    private final SpaceRepository repository;
 
     public List<Space> findAll() {
         return repository.findAll();
     }
 
     public Optional<Space> findByName(String name) {
-        if (!isValidName(name))
+        if (!isValidName(name)) {
             throw new InvalidNameException(name);
+        }
 
         return repository.findByName(name);
     }
 
     public List<Space> matchByName(String query) {
-        if (!isValidQuery(query))
+        if (!isValidQuery(query)) {
             throw new InvalidQueryException(query);
+        }
 
         var regexp = query
                 .replaceAll("[^A-Za-z0-9-_*]+", "")
@@ -57,6 +48,18 @@ public class SpaceService {
 
     private boolean isValidQuery(String query) {
         return isValidName(query.replace("*", ""));
+    }
+
+    public static class InvalidNameException extends RuntimeException {
+        public InvalidNameException(String name) {
+            super(String.format("Invalid name: '%s'.", name));
+        }
+    }
+
+    public static class InvalidQueryException extends RuntimeException {
+        public InvalidQueryException(String query) {
+            super(String.format("Invalid query: '%s'.", query));
+        }
     }
 
 }

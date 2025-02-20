@@ -10,10 +10,10 @@ import com.daniilmiskevich.labs.space.model.Space;
 @Repository
 public interface SpaceRepository {
 
-    public List<Space> findAll();
+    List<Space> findAll();
 
-    public Optional<Space> findByName(String name);
+    Optional<Space> findByName(String name);
 
-    public List<Space> matchByName(String regexp);
+    List<Space> matchByName(String regexp);
 
 }

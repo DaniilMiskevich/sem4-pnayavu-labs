@@ -1,4 +1,4 @@
-package com.daniilmiskevich.labs.space.repository_impl;
+package com.daniilmiskevich.labs.space.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;

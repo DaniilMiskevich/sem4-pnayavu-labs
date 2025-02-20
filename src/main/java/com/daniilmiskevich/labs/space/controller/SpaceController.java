@@ -2,6 +2,7 @@ package com.daniilmiskevich.labs.space.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,19 +18,19 @@ import com.daniilmiskevich.labs.space.service.SpaceService;
 @RequestMapping("/api/spaces")
 public class SpaceController {
 
+    private final SpaceService service;
+
     public SpaceController(SpaceService service) {
         this.service = service;
     }
 
-    private final SpaceService service;
-
     @GetMapping("")
-    public List<Space> searchByName(@RequestParam(required = false) Optional<String> query) {
-        if (query.isEmpty()) {
+    public List<Space> searchByName(@RequestParam(required = false) String query) {
+        if (query == null) {
             return service.findAll();
         } else {
             try {
-                return service.matchByName(query.get());
+                return service.matchByName(query);
             } catch (SpaceService.InvalidQueryException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
