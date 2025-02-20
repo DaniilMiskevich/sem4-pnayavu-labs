@@ -3,8 +3,6 @@ package com.daniilmiskevich.labs.space.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Repository;
 
 import com.daniilmiskevich.labs.space.model.Space;
@@ -23,14 +21,14 @@ public class MemSpaceRepositoryImpl implements SpaceRepository {
 
     public Optional<Space> findByName(String name) {
         return spaces.stream()
-                .filter((space) -> space.name().equals(name))
+                .filter(space -> space.name().equals(name))
                 .findFirst();
     }
 
     public List<Space> matchByName(String regexp) {
         return spaces.stream()
-                .filter((space) -> space.name().matches(regexp))
-                .collect(Collectors.toList());
+                .filter(space -> space.name().matches(regexp))
+                .toList();
     }
 
     @PostConstruct
