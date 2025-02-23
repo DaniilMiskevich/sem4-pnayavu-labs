@@ -35,7 +35,6 @@ public class SpaceService {
         }
 
         var regexp = query
-                .replaceAll("[^A-Za-z0-9-_*]+", "")
                 .replace("*", ".*");
 
         return repository.matchByName(regexp);
