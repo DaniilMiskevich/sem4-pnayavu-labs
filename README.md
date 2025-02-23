@@ -36,21 +36,21 @@ All endpoints start with `/api/` as a standard prefix for accessing the REST API
 
 To run this project locally, follow these steps:
 
-1.  clone the repo: `git clone https://github.com/DaniilMiskevich/sem4-pnayavu-labs.git`
+1. Clone the repo: `git clone https://github.com/DaniilMiskevich/sem4-pnayavu-labs.git`
 
-2.  navigate to the project directory: `cd sem4-pnayavu-labs`
+2. Navigate to the project directory: `cd sem4-pnayavu-labs`
 
-3.  run the project using Gradle: `./gradlew bootRun`
+3. Run the project using Gradle: `./gradlew bootRun`
 
-4.  use the api at `localhost:8080`
+4. Use the api at `localhost:8080`
 
 
 ## ToDo
 
-- replace in-memory storage with the SQL database
+- Replace in-memory storage with the SQL database
 
-- an ability to create new spaces
+- An ability to create new spaces
 
-- an ability to view and create posts
+- An ability to view and create posts
 
-- an ability to comment posts and leave votes
+- An ability to comment posts and leave votes
