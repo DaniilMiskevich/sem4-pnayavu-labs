@@ -16,4 +16,10 @@ public interface SpaceRepository {
 
     List<Space> matchByName(String regexp);
 
+    void create(Space space);
+
+    void updateByName(String name, Space space);
+
+    void deleteByName(String name);
+
 }

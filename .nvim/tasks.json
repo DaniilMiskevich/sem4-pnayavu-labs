@@ -9,6 +9,10 @@
             "icon": "󰃢",
             "desc": "Delete the build directory",
             "cmd": "./gradlew clean"
+        },
+        "postgresql": {
+            "desc": "run postgresql console",
+            "cmd": "sudo -u postgres psql labs"
         }
     }
 }

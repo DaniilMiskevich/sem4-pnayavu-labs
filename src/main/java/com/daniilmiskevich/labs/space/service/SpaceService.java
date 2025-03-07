@@ -22,42 +22,26 @@ public class SpaceService {
     }
 
     public Optional<Space> findByName(String name) {
-        if (!isValidName(name)) {
-            throw new InvalidNameException(name);
-        }
-
         return repository.findByName(name);
     }
 
-    public List<Space> matchByName(String query) {
-        if (!isValidQuery(query)) {
-            throw new InvalidQueryException(query);
-        }
-
-        var regexp = query
+    public List<Space> matchByName(String pattern) {
+        var regexp = pattern
                 .replace("*", ".*");
 
         return repository.matchByName(regexp);
     }
 
-    private boolean isValidName(String name) {
-        return !name.matches("[^A-Za-z0-9-_]");
+    public void create(Space space) {
+        repository.create(space);
     }
 
-    private boolean isValidQuery(String query) {
-        return isValidName(query.replace("*", ""));
+    public void updateByName(String name, Space space) {
+        repository.updateByName(name, space);
     }
 
-    public static class InvalidNameException extends RuntimeException {
-        public InvalidNameException(String name) {
-            super(String.format("Invalid name: '%s'.", name));
-        }
-    }
-
-    public static class InvalidQueryException extends RuntimeException {
-        public InvalidQueryException(String query) {
-            super(String.format("Invalid query: '%s'.", query));
-        }
+    public void deleteByName(String name) {
+        repository.deleteByName(name);
     }
 
 }
