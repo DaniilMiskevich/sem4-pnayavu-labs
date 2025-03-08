@@ -16,6 +16,7 @@ java {
     }
 }
 
+
 checkstyle {
     toolVersion = "10.21.2"
 }
@@ -42,6 +43,10 @@ dependencies {
 
     // testImplementation("org.springframework.boot:spring-boot-starter-test")
     // testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
+    systemProperty("spring.config.additional-location", "classpath:/credentials.properties")
 }
 
 tasks.withType<Test> {
