@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.daniilmiskevich.labs.space.model.Space;
 import com.daniilmiskevich.labs.space.repository.SpaceRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
 @Service
 public class SpaceService {
 
@@ -21,27 +24,35 @@ public class SpaceService {
         return repository.findAll();
     }
 
+    public Optional<Space> findById(Long id) {
+        return repository.findById(id);
+    }
+
     public Optional<Space> findByName(String name) {
         return repository.findByName(name);
     }
 
     public List<Space> matchByName(String pattern) {
         var regexp = pattern
-                .replace("*", ".*");
+                .replace("*", "%");
 
         return repository.matchByName(regexp);
     }
 
-    public void create(Space space) {
-        repository.create(space);
+    public Space create(Space space) {
+        return repository.save(space);
     }
 
-    public void updateByName(String name, Space space) {
-        repository.updateByName(name, space);
+    public Space update(Space space) {
+        if (!repository.existsById(space.getId())) {
+            throw new EntityNotFoundException();
+        }
+        return repository.save(space);
     }
 
-    public void deleteByName(String name) {
-        repository.deleteByName(name);
+    @Transactional
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
 }

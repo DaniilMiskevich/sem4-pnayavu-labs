@@ -1,7 +1,6 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.List;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +13,8 @@ import jakarta.persistence.OneToMany;
 public class Space {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    final private Long id;
 
     @Column(unique = true)
     private String name;
@@ -23,12 +22,17 @@ public class Space {
     @OneToMany(mappedBy = "space")
     private List<Spark> sparks;
 
-    public Space(UUID id, String name) {
-        this.id = id;
-        this.name = name;
+    public Space() {
+        this.id = null;
     }
 
-    public UUID getId() {
+    public Space(Long id, String name) {
+        this.id = id;
+        this.name = name;
+        this.sparks = null;
+    }
+
+    public Long getId() {
         return id;
     }
 

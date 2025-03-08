@@ -1,3 +1,5 @@
+// https://hackernoon.com/using-postgres-effectively-in-spring-boot-applications
+
 package com.daniilmiskevich.labs.space.repository;
 
 import java.util.List;
@@ -12,14 +14,20 @@ public interface SpaceRepository {
 
     List<Space> findAll();
 
+    Optional<Space> findById(Long id);
+
     Optional<Space> findByName(String name);
 
-    List<Space> matchByName(String regexp);
+    boolean existsById(Long id);
 
-    void create(Space space);
+    /**
+     * @param jpql_pattern - jpql-like pattern, where `_` matches any character and
+     *                     `%` matches any sequence of characters.
+     */
+    List<Space> matchByName(String jpql_pattern);
 
-    void updateByName(String name, Space space);
+    Space save(Space space);
 
-    void deleteByName(String name);
+    void deleteById(Long id);
 
 }
