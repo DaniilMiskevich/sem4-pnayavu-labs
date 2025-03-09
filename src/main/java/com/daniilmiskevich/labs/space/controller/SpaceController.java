@@ -1,7 +1,6 @@
 package com.daniilmiskevich.labs.space.controller;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.daniilmiskevich.labs.space.controller.dto.SpaceRequestDto;
+import com.daniilmiskevich.labs.space.controller.dto.SpaceResponseDto;
 import com.daniilmiskevich.labs.space.model.Space;
 import com.daniilmiskevich.labs.space.service.SpaceService;
 
@@ -24,18 +25,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/api/spaces")
 public class SpaceController {
-
-    private record SpaceResponseDto(Long id, String name) {
-        public SpaceResponseDto(Space space) {
-            this(space.getId(), space.getName());
-        }
-    }
-
-    private record SpaceRequestDto(String name) {
-        public Space toSpace(Long id) {
-            return new Space(id, name);
-        }
-    }
 
     private final SpaceService service;
 
@@ -47,13 +36,18 @@ public class SpaceController {
     public List<SpaceResponseDto> searchByName(@RequestParam(required = false) String pattern) {
         return (switch (pattern) {
             case null -> service.findAll();
-            case String p when !isValidNamePattern(p) -> Collections.<Space>emptyList();
+            case String p when !isValidNamePattern(p) -> List.<Space>of();
             case String p -> service.matchByName(p);
-        }).stream().map(SpaceResponseDto::new).toList();
+        })
+                .stream()
+                .map(SpaceResponseDto::new)
+                .toList();
     }
 
     @GetMapping("/{idOrName}")
-    public SpaceResponseDto getByIdOrName(@PathVariable String idOrName, HttpServletResponse response) {
+    public SpaceResponseDto getByIdOrName(
+            @PathVariable String idOrName,
+            HttpServletResponse response) {
         try {
             return getById(Long.decode(idOrName));
         } catch (NumberFormatException e) {
@@ -83,6 +77,7 @@ public class SpaceController {
 
         try {
             response.sendRedirect(spaceByName.get().getId().toString());
+            return;
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }

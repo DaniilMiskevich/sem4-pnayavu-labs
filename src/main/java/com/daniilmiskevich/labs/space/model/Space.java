@@ -44,4 +44,12 @@ public class Space {
         return sparks;
     }
 
+    public void setName(String value) {
+        name = value;
+    }
+
+    public void addSpark(Spark spark) {
+        sparks.add(spark);
+    }
+
 }

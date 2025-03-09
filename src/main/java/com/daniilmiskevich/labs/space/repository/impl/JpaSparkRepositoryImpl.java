@@ -6,16 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.daniilmiskevich.labs.space.model.Space;
-import com.daniilmiskevich.labs.space.repository.SpaceRepository;
+import com.daniilmiskevich.labs.space.model.Spark;
+import com.daniilmiskevich.labs.space.repository.SparkRepository;
 
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface JpaSpaceRepositoryImpl extends SpaceRepository, JpaRepository<Space, String> {
+public interface JpaSparkRepositoryImpl extends SparkRepository, JpaRepository<Spark, String> {
 
-    @Query(value = "SELECT s FROM Space s WHERE s.name LIKE :jpql_pattern")
-    List<Space> matchByName(String jpql_pattern);
+    @Query(value = "SELECT s FROM Spark s WHERE LOWER(s.name) LIKE LOWER(:jpql_pattern)")
+    List<Spark> matchByName(String jpql_pattern);
 
     @Transactional
     void deleteById(Long id);
