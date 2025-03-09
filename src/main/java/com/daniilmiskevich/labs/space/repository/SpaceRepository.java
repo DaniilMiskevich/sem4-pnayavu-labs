@@ -21,10 +21,10 @@ public interface SpaceRepository {
     boolean existsById(Long id);
 
     /**
-     * @param jpql_pattern - jpql-like pattern, where `_` matches any character and
-     *                     `%` matches any sequence of characters.
+     * @param jpqlPattern - jpql-like pattern, where `_` matches any character and `%` matches any
+     *        sequence of characters.
      */
-    List<Space> matchByName(String jpql_pattern);
+    List<Space> matchByName(String jpqlPattern);
 
     Space save(Space space);
 

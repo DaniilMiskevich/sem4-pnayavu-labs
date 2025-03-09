@@ -45,7 +45,7 @@ public class SparkService {
         }
         var space = optionalSpace.get();
 
-        space.addSpark(spark);
+        space.getSparks().add(spark);
         spark.setSpace(space);
 
         return repository.save(spark);

@@ -17,10 +17,10 @@ public interface SparkRepository {
     boolean existsById(Long id);
 
     /**
-     * @param jpql_pattern - jpql-like pattern, where `_` matches any character and
-     *                     `%` matches any sequence of characters.
+     * @param jpqlPattern - jpql-like pattern, where `_` matches any character and `%` matches any
+     *        sequence of characters.
      */
-    List<Spark> matchByName(String jpql_pattern);
+    List<Spark> matchByName(String jpqlPattern);
 
     Spark save(Spark spark);
 

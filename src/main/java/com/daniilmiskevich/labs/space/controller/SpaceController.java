@@ -34,20 +34,21 @@ public class SpaceController {
 
     @GetMapping("")
     public List<SpaceResponseDto> searchByName(@RequestParam(required = false) String pattern) {
-        return (switch (pattern) {
+        var spaces = switch (pattern) {
             case null -> service.findAll();
             case String p when !isValidNamePattern(p) -> List.<Space>of();
             case String p -> service.matchByName(p);
-        })
-                .stream()
-                .map(SpaceResponseDto::new)
-                .toList();
+        };
+        return spaces
+            .stream()
+            .map(SpaceResponseDto::new)
+            .toList();
     }
 
     @GetMapping("/{idOrName}")
     public SpaceResponseDto getByIdOrName(
-            @PathVariable String idOrName,
-            HttpServletResponse response) {
+        @PathVariable String idOrName,
+        HttpServletResponse response) {
         try {
             return getById(Long.decode(idOrName));
         } catch (NumberFormatException e) {

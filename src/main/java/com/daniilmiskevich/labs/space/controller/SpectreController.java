@@ -35,22 +35,22 @@ public class SpectreController {
         var spectreById = optionalSpectre.get();
 
         return spectreById.getSparksWithin()
-                .stream()
-                .map(SparkResponseDto::new)
-                .toList();
+            .stream()
+            .map(SparkResponseDto::new)
+            .toList();
     }
 
     @PatchMapping("/{name}")
     public SpectreResponseDto addSparkByName(
-            @PathVariable String name,
-            @RequestParam(name = "spark_id") Long sparkId) {
+        @PathVariable String name,
+        @RequestParam(name = "spark_id") Long sparkId) {
         return new SpectreResponseDto(service.addSparkByName(name, sparkId));
     }
 
     @DeleteMapping("/{name}")
     public void deleteById(
-            @PathVariable String name,
-            @RequestParam(name = "spark_id") Long sparkId) {
+        @PathVariable String name,
+        @RequestParam(name = "spark_id") Long sparkId) {
         service.deleteSparkByName(name, sparkId);
     }
 

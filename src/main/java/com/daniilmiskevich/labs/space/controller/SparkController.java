@@ -31,8 +31,8 @@ public class SparkController {
     @GetMapping("")
     public List<SparkResponseDto> searchByName(@RequestParam(required = false) String pattern) {
         return (pattern == null
-                ? service.findAll()
-                : service.matchByName(pattern))
+            ? service.findAll()
+            : service.matchByName(pattern))
                 .stream()
                 .map(SparkResponseDto::new)
                 .toList();
@@ -51,8 +51,8 @@ public class SparkController {
 
     @PostMapping("")
     public SparkResponseDto create(
-            @RequestParam(name = "space_id") Long spaceId,
-            @RequestBody SparkRequestDto spark) {
+        @RequestParam(name = "space_id") Long spaceId,
+        @RequestBody SparkRequestDto spark) {
         return new SparkResponseDto(service.create(spaceId, spark.toSpark(null)));
     }
 

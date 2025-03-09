@@ -14,7 +14,7 @@ public class Space {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    final private Long id;
+    private final Long id;
 
     @Column(unique = true)
     private String name;
@@ -48,8 +48,8 @@ public class Space {
         name = value;
     }
 
-    public void addSpark(Spark spark) {
-        sparks.add(spark);
+    public void setSparks(List<Spark> sparks) {
+        this.sparks = sparks;
     }
 
 }

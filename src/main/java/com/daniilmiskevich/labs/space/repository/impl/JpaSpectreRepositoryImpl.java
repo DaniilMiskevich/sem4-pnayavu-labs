@@ -9,7 +9,8 @@ import com.daniilmiskevich.labs.space.repository.SpectreRepository;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface JpaSpectreRepositoryImpl extends SpectreRepository, JpaRepository<Spectre, String> {
+public interface JpaSpectreRepositoryImpl
+    extends SpectreRepository, JpaRepository<Spectre, String> {
 
     @Transactional
     void deleteByName(String name);

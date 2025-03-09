@@ -61,8 +61,8 @@ public class Spark {
         space = value;
     }
 
-    public void addSpectre(Spectre spectre) {
-        spectres.add(spectre);
+    public void setSpectres(Set<Spectre> spectres) {
+        this.spectres = spectres;
     }
 
 }

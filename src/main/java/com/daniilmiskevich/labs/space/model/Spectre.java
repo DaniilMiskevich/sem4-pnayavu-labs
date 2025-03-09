@@ -15,7 +15,10 @@ public class Spectre {
     private final String name;
 
     @ManyToMany
-    @JoinTable(name = "spectre_sparks", joinColumns = @JoinColumn(name = "spectre_id"), inverseJoinColumns = @JoinColumn(name = "spark_id"))
+    @JoinTable(
+        name = "spectre_sparks",
+        joinColumns = @JoinColumn(name = "spectre_id"),
+        inverseJoinColumns = @JoinColumn(name = "spark_id"))
     private List<Spark> sparksWithin;
 
     public Spectre() {
@@ -35,12 +38,38 @@ public class Spectre {
         return sparksWithin;
     }
 
-    public void addSpark(Spark spark) {
-        if (sparksWithin != null) {
-            sparksWithin.add(spark);
-        } else {
-            sparksWithin = List.of(spark);
+    public void setSparksWithin(List<Spark> sparksWithin) {
+        this.sparksWithin = sparksWithin;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Spectre other = (Spectre) obj;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
     }
 
 }
