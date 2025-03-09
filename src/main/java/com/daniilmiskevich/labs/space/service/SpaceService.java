@@ -34,7 +34,7 @@ public class SpaceService {
 
     public List<Space> matchByName(String pattern) {
         pattern = EscapeCharacter.DEFAULT.escape(pattern);
-        var jpqlPattern = pattern
+        var jpqlPattern = (pattern != null ? pattern : "*")
             .replace("*", "%");
 
         return repository.matchByName(jpqlPattern);

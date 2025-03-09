@@ -78,7 +78,6 @@ public class SpaceController {
 
         try {
             response.sendRedirect(spaceByName.get().getId().toString());
-            return;
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }

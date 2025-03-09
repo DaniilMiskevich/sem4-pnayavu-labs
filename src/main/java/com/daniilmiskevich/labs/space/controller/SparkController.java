@@ -39,7 +39,7 @@ public class SparkController {
     }
 
     @GetMapping("/{id}")
-    private SparkResponseDto getById(@PathVariable Long id) {
+    public SparkResponseDto getById(@PathVariable Long id) {
         var optionalSparkById = service.findById(id);
         if (optionalSparkById.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

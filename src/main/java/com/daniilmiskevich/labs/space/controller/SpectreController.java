@@ -27,7 +27,7 @@ public class SpectreController {
     }
 
     @GetMapping("/{name}")
-    private List<SparkResponseDto> getSparksWithinByName(@PathVariable String name) {
+    public List<SparkResponseDto> getSparksWithinByName(@PathVariable String name) {
         var optionalSpectre = service.findByName(name);
         if (optionalSpectre.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
