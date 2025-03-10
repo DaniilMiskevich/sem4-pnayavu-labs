@@ -1,7 +1,7 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.List;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,7 +14,7 @@ public class Spectre {
     @Id
     private final String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.DETACH)
     @JoinTable(
         name = "spectre_sparks",
         joinColumns = @JoinColumn(name = "spectre_id"),

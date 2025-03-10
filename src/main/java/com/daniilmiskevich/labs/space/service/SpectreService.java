@@ -69,11 +69,7 @@ public class SpectreService {
         spectre.getSparksWithin().remove(spark);
         spark.getSpectres().remove(spectre);
 
-        if (spectre.getSparksWithin().isEmpty()) {
-            repository.deleteByName(spectre.getName());
-        } else {
-            repository.save(spectre);
-        }
+        repository.save(spectre);
     }
 
 }

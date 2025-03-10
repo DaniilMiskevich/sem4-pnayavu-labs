@@ -1,7 +1,7 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.List;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +19,7 @@ public class Space {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "space")
+    @OneToMany(mappedBy = "space", cascade = CascadeType.REMOVE)
     private List<Spark> sparks;
 
     public Space() {

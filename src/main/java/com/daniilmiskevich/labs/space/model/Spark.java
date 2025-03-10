@@ -1,8 +1,9 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.Set;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,11 +20,11 @@ public class Spark {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id")
     private Space space;
 
-    @ManyToMany(mappedBy = "sparksWithin")
+    @ManyToMany(mappedBy = "sparksWithin", cascade = CascadeType.DETACH)
     private Set<Spectre> spectres;
 
     public Spark() {

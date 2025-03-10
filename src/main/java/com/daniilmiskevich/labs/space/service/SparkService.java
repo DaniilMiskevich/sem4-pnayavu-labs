@@ -39,11 +39,8 @@ public class SparkService {
     }
 
     public Spark create(Long spaceId, Spark spark) {
-        var optionalSpace = spaceRepository.findById(spaceId);
-        if (optionalSpace.isEmpty()) {
-            throw new EntityNotFoundException();
-        }
-        var space = optionalSpace.get();
+        var space = spaceRepository.findById(spaceId)
+            .orElseThrow(() -> new EntityNotFoundException());
 
         space.getSparks().add(spark);
         spark.setSpace(space);
@@ -52,11 +49,8 @@ public class SparkService {
     }
 
     public Spark update(Spark partialSpark) {
-        var optionalSpark = repository.findById(partialSpark.getId());
-        if (optionalSpark.isEmpty()) {
-            throw new EntityNotFoundException();
-        }
-        var spark = optionalSpark.get();
+        var spark = repository.findById(partialSpark.getId())
+            .orElseThrow(() -> new EntityNotFoundException());
 
         if (partialSpark.getName() != null) {
             spark.setName(partialSpark.getName());
