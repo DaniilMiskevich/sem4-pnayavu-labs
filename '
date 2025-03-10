@@ -1,0 +1,89 @@
+package com.daniilmiskevich.labs.space.service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.data.jpa.repository.query.EscapeCharacter;
+import org.springframework.stereotype.Service;
+
+import com.daniilmiskevich.labs.space.model.Spark;
+import com.daniilmiskevich.labs.space.repository.SpaceRepository;
+import com.daniilmiskevich.labs.space.repository.SparkRepository;
+import com.daniilmiskevich.labs.space.repository.SpectreRepository;
+import jakarta.persistence.EntityNotFoundException;
+
+@Service
+public class SparkService {
+
+    private final SparkRepository repository;
+    private final SpaceRepository spaceRepository;
+    private final SpectreRepository spectreRepository;
+
+    public SparkService(SparkRepository repository, SpaceRepository spaceRepository,
+        SpectreRepository spectreRepository) {
+        this.repository = repository;
+        this.spaceRepository = spaceRepository;
+        this.spectreRepository = spectreRepository;
+    }
+
+    public List<Spark> findAll() {
+        return repository.findAll();
+    }
+
+    public Optional<Spark> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public List<Spark> matchByName(String pattern) {
+        pattern = EscapeCharacter.DEFAULT.escape(pattern);
+        var jpqlPattern = String.format("*%s*", pattern).replace("*", "%");
+
+        return repository.matchByName(jpqlPattern);
+    }
+
+    public Spark create(Long spaceId, Spark spark) {
+        var space = spaceRepository.findById(spaceId)
+            .orElseThrow(EntityNotFoundException::new);
+
+        space.getSparks().add(spark);
+        spark.setSpace(space);
+
+        return repository.save(spark);
+    }
+
+    public Spark update(Spark partialSpark) {
+        var spark = repository.findById(partialSpark.getId())
+            .orElseThrow(EntityNotFoundException::new);
+
+        if (partialSpark.getName() != null) {
+            spark.setName(partialSpark.getName());
+        }
+
+        var spectres = partialSpark.getSpectres().stream().filter(spark.getSpectres().contains)
+            .map((partialSpectre) -> {
+                if (spark.getSpectres().contains(partialSpectre)) {
+                    return null;
+                }
+
+                var spectre = spectreRepository.findByName(partialSpectre.getName())
+                    .orElse(partialSpectre);
+                if (spectre.getSparksWithin() == null) {
+                    spectre.setSparksWithin(List.of());
+                }
+
+                spectre.getSparksWithin().add(spark);
+                return spectre;
+            }).collect(Collectors.toSet());
+
+
+
+        spark.setSpectres(spectres);
+
+        return repository.save(spark);
+    }
+
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
+
+}

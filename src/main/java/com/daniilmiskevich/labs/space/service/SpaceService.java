@@ -20,10 +20,6 @@ public class SpaceService {
         this.repository = repository;
     }
 
-    public List<Space> findAll() {
-        return repository.findAll();
-    }
-
     public Optional<Space> findById(Long id) {
         return repository.findById(id);
     }
@@ -32,25 +28,26 @@ public class SpaceService {
         return repository.findByName(name);
     }
 
-    public List<Space> matchByName(String pattern) {
-        pattern = EscapeCharacter.DEFAULT.escape(pattern);
-        var jpqlPattern = (pattern != null ? pattern : "*")
-            .replace("*", "%");
+    public List<Space> match(String namePattern) {
+        if (namePattern == null) {
+            return repository.findAll();
+        } else {
+            namePattern = EscapeCharacter.DEFAULT.escape(namePattern);
+            var jpqlPattern = namePattern.replace("*", "%");
 
-        return repository.matchByName(jpqlPattern);
+            return repository.matchByName(jpqlPattern);
+        }
     }
 
     public Space create(Space space) {
+        space.setSparks(List.of());
+
         return repository.save(space);
     }
 
     public Space update(Space partialSpace) {
-        var optionalSpace = findById(partialSpace.getId());
-        if (optionalSpace.isEmpty()) {
-
-            throw new EntityNotFoundException();
-        }
-        var space = optionalSpace.get();
+        var space = repository.findById(partialSpace.getId())
+            .orElseThrow(EntityNotFoundException::new);
 
         if (partialSpace.getName() != null) {
             space.setName(partialSpace.getName());

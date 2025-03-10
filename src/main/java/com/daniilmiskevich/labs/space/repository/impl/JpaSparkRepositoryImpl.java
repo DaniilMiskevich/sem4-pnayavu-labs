@@ -1,7 +1,7 @@
 package com.daniilmiskevich.labs.space.repository.impl;
 
 import java.util.List;
-
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,8 +15,12 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface JpaSparkRepositoryImpl extends SparkRepository, JpaRepository<Spark, String> {
 
-    @Query(value = "SELECT s FROM Spark s WHERE LOWER(s.name) LIKE LOWER(:pattern)")
-    List<Spark> matchByName(@Param("pattern") String jpqlPattern);
+    // TODO! show all if no spectres
+    @Query(value = "SELECT s FROM Spark s "
+        + "LEFT JOIN s.spectres sp "
+        + "WHERE (LOWER(s.name) LIKE LOWER(:pattern))"
+        + "AND (sp.name IN :spectreNames)")
+    List<Spark> match(@Param("pattern") String jpqlPattern, Set<String> spectreNames);
 
     @Transactional
     void deleteById(Long id);

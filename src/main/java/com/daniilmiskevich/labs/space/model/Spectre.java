@@ -4,8 +4,6 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
 @Entity
@@ -14,11 +12,7 @@ public class Spectre {
     @Id
     private final String name;
 
-    @ManyToMany(cascade = CascadeType.DETACH)
-    @JoinTable(
-        name = "spectre_sparks",
-        joinColumns = @JoinColumn(name = "spectre_id"),
-        inverseJoinColumns = @JoinColumn(name = "spark_id"))
+    @ManyToMany(mappedBy = "spectres", cascade = CascadeType.DETACH)
     private List<Spark> sparksWithin;
 
     public Spectre() {

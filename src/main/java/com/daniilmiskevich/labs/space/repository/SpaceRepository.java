@@ -18,8 +18,6 @@ public interface SpaceRepository {
 
     Optional<Space> findByName(String name);
 
-    boolean existsById(Long id);
-
     /**
      * @param jpqlPattern - jpql-like pattern, where `_` matches any character and `%` matches any
      *        sequence of characters.

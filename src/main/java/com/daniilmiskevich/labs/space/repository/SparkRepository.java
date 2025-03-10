@@ -2,7 +2,7 @@ package com.daniilmiskevich.labs.space.repository;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 import com.daniilmiskevich.labs.space.model.Spark;
@@ -14,13 +14,11 @@ public interface SparkRepository {
 
     Optional<Spark> findById(Long id);
 
-    boolean existsById(Long id);
-
     /**
      * @param jpqlPattern - jpql-like pattern, where `_` matches any character and `%` matches any
      *        sequence of characters.
      */
-    List<Spark> matchByName(String jpqlPattern);
+    List<Spark> match(String jpqlPattern, Set<String> spectreNames);
 
     Spark save(Spark spark);
 

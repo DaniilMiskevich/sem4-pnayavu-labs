@@ -17,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.daniilmiskevich.labs.space.controller.dto.SpaceRequestDto;
 import com.daniilmiskevich.labs.space.controller.dto.SpaceResponseDto;
-import com.daniilmiskevich.labs.space.model.Space;
 import com.daniilmiskevich.labs.space.service.SpaceService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,13 +32,13 @@ public class SpaceController {
     }
 
     @GetMapping("")
-    public List<SpaceResponseDto> searchByName(@RequestParam(required = false) String pattern) {
-        var spaces = switch (pattern) {
-            case null -> service.findAll();
-            case String p when !isValidNamePattern(p) -> List.<Space>of();
-            case String p -> service.matchByName(p);
-        };
-        return spaces
+    public List<SpaceResponseDto> searchByName(
+        @RequestParam(name = "name", required = false) String namePattern) {
+        if (!isValidNamePattern(namePattern)) {
+            return List.of();
+        }
+
+        return service.match(namePattern)
             .stream()
             .map(SpaceResponseDto::new)
             .toList();
@@ -58,11 +57,8 @@ public class SpaceController {
     }
 
     private SpaceResponseDto getById(Long id) {
-        var optionalSpaceById = service.findById(id);
-        if (optionalSpaceById.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        var spaceById = optionalSpaceById.get();
+        var spaceById = service.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return new SpaceResponseDto(spaceById);
     }
@@ -71,13 +67,11 @@ public class SpaceController {
         if (!isValidName(name)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        var spaceByName = service.findByName(name);
-        if (spaceByName.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        var spaceByName = service.findByName(name)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         try {
-            response.sendRedirect(spaceByName.get().getId().toString());
+            response.sendRedirect(spaceByName.getId().toString());
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -111,7 +105,7 @@ public class SpaceController {
     }
 
     private boolean isValidNamePattern(String pattern) {
-        return isValidName(pattern.replace("*", ""));
+        return pattern == null || isValidName(pattern.replace("*", ""));
     }
 
 }

@@ -29,22 +29,23 @@ public class SparkController {
     }
 
     @GetMapping("")
-    public List<SparkResponseDto> searchByName(@RequestParam(required = false) String pattern) {
-        return (pattern == null
-            ? service.findAll()
-            : service.matchByName(pattern))
-                .stream()
-                .map(SparkResponseDto::new)
-                .toList();
+    public List<SparkResponseDto> search(
+        @RequestParam(name = "name", required = false) String namePattern,
+        @RequestParam(name = "spectres", required = false) String spectrePattern) {
+        if (!isValidSpectrePattern(spectrePattern)) {
+            return List.of();
+        }
+
+        return service.match(namePattern, spectrePattern)
+            .stream()
+            .map(SparkResponseDto::new)
+            .toList();
     }
 
     @GetMapping("/{id}")
     public SparkResponseDto getById(@PathVariable Long id) {
-        var optionalSparkById = service.findById(id);
-        if (optionalSparkById.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        var sparkById = optionalSparkById.get();
+        var sparkById = service.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return new SparkResponseDto(sparkById);
     }
@@ -64,6 +65,15 @@ public class SparkController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         service.deleteById(id);
+    }
+
+    private boolean isValidSpectreName(String name) {
+        return name.matches("^[a-z-_][a-z0-9-_]*$");
+    }
+
+    private boolean isValidSpectrePattern(String pattern) {
+        return pattern == null || isValidSpectreName(pattern.replace(",", ""));
+
     }
 
 }

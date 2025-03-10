@@ -10,8 +10,7 @@ public record SpaceResponseDto(Long id, String name, List<SparkResponseDto> spar
         this(
             space.getId(),
             space.getName(),
-            Optional.ofNullable(space.getSparks())
-                .orElse(List.of())
+            space.getSparks()
                 .stream()
                 .map(SparkResponseDto::new)
                 .toList());

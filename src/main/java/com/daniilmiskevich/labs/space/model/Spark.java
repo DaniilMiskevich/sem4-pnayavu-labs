@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
@@ -24,18 +25,22 @@ public class Spark {
     @JoinColumn(name = "space_id")
     private Space space;
 
-    @ManyToMany(mappedBy = "sparksWithin", cascade = CascadeType.DETACH)
+    @ManyToMany(cascade = CascadeType.DETACH)
+    @JoinTable(
+        name = "spark_spectre",
+        joinColumns = @JoinColumn(name = "spark_id"),
+        inverseJoinColumns = @JoinColumn(name = "spectre_name"))
     private Set<Spectre> spectres;
 
     public Spark() {
         this.id = null;
     }
 
-    public Spark(Long id, String name) {
+    public Spark(Long id, String name, Set<Spectre> spectres) {
         this.id = id;
         this.name = name;
         this.space = null;
-        this.spectres = null;
+        this.spectres = spectres;
     }
 
     public Long getId() {
