@@ -10,6 +10,7 @@ import com.daniilmiskevich.labs.space.model.Space;
 import com.daniilmiskevich.labs.space.repository.SpaceRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class SpaceService {
@@ -39,6 +40,7 @@ public class SpaceService {
         }
     }
 
+    @Transactional
     public Space create(Space space) {
         space.setSparks(List.of());
 

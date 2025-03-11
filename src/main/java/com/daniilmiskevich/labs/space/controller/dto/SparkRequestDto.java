@@ -14,10 +14,12 @@ public record SparkRequestDto(
         return new Spark(
             id,
             name,
-            spectreNames
-                .stream()
-                .map(Spectre::new)
-                .collect(Collectors.toSet()));
+            spectreNames != null
+                ? spectreNames
+                    .stream()
+                    .map(Spectre::new)
+                    .collect(Collectors.toSet())
+                : null);
 
     }
 }
