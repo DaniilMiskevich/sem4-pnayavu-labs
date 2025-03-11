@@ -11,6 +11,8 @@ public interface SpectreRepository {
 
     Optional<Spectre> findByName(String name);
 
+    boolean existsByName(String name);
+
     Spectre save(Spectre space);
 
     void deleteByName(String name);

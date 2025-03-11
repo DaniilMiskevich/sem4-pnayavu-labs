@@ -1,7 +1,6 @@
 package com.daniilmiskevich.labs.space.controller.dto;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.daniilmiskevich.labs.space.model.Space;
 

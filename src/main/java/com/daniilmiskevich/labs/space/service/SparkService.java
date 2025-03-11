@@ -1,7 +1,7 @@
 package com.daniilmiskevich.labs.space.service;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,6 +14,7 @@ import com.daniilmiskevich.labs.space.repository.SpaceRepository;
 import com.daniilmiskevich.labs.space.repository.SparkRepository;
 import com.daniilmiskevich.labs.space.repository.SpectreRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class SparkService {
@@ -47,24 +48,29 @@ public class SparkService {
             namePattern = EscapeCharacter.DEFAULT.escape(namePattern);
             var jpqlNamePattern = String.format("*%s*", namePattern).replace("*", "%");
 
-            var spectreNames = new HashSet<String>();
-            Collections.addAll(spectreNames, spectrePattern.split(","));
+            var spectreNames = !spectrePattern.isEmpty()
+                ? Arrays.stream(spectrePattern.split(","))
+                    .collect(Collectors.toSet())
+                : Set.<String>of();
 
             return repository.match(jpqlNamePattern, spectreNames);
         }
     }
 
+    @Transactional
     public Spark create(Long spaceId, Spark spark) {
         var space = spaceRepository.findById(spaceId)
             .orElseThrow(EntityNotFoundException::new);
 
         space.getSparks().add(spark);
         spark.setSpace(space);
-        spark.setSpectres(Set.of());
+
+        spark.getSpectres().forEach((spectre) -> spectreRepository.save(spectre));
 
         return repository.save(spark);
     }
 
+    @Transactional
     public Spark update(Spark partialSpark) {
         var spark = repository.findById(partialSpark.getId())
             .orElseThrow(EntityNotFoundException::new);
@@ -81,7 +87,7 @@ public class SparkService {
                     var spectre = spectreRepository.findByName(partialSpectre.getName())
                         .orElse(partialSpectre);
                     if (spectre.getSparksWithin() == null) {
-                        spectre.setSparksWithin(List.of());
+                        spectre.setSparksWithin(new ArrayList<Spark>());
                     }
                     return spectre;
                 })
@@ -93,9 +99,10 @@ public class SparkService {
 
             spark.getSpectres().addAll(addedSpectres);
             spark.getSpectres().removeAll(removedSpectres);
-            // TODO! fix error from immutable set
             addedSpectres.forEach((spectre) -> spectre.getSparksWithin().add(spark));
             removedSpectres.forEach((spectre) -> spectre.getSparksWithin().remove(spark));
+
+            spark.getSpectres().forEach((spectre) -> spectreRepository.save(spectre));
         }
 
         return repository.save(spark);
