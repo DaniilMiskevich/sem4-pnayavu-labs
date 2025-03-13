@@ -65,7 +65,7 @@ public class SparkService {
         space.getSparks().add(spark);
         spark.setSpace(space);
 
-        spark.getSpectres().forEach((spectre) -> spectreRepository.save(spectre));
+        spark.getSpectres().forEach(spectre -> spectreRepository.save(spectre));
 
         return repository.save(spark);
     }
@@ -82,7 +82,7 @@ public class SparkService {
         if (partialSpark.getSpectres() != null) {
             var addedSpectres = partialSpark.getSpectres()
                 .stream()
-                .filter((partialSpectre) -> !spark.getSpectres().contains(partialSpectre))
+                .filter(partialSpectre -> !spark.getSpectres().contains(partialSpectre))
                 .map((partialSpectre) -> {
                     var spectre = spectreRepository.findByName(partialSpectre.getName())
                         .orElse(partialSpectre);
@@ -94,15 +94,15 @@ public class SparkService {
                 .collect(Collectors.toSet());
             var removedSpectres = spark.getSpectres()
                 .stream()
-                .filter((spectre) -> !partialSpark.getSpectres().contains(spectre))
+                .filter(spectre -> !partialSpark.getSpectres().contains(spectre))
                 .collect(Collectors.toSet());
 
             spark.getSpectres().addAll(addedSpectres);
             spark.getSpectres().removeAll(removedSpectres);
-            addedSpectres.forEach((spectre) -> spectre.getSparksWithin().add(spark));
-            removedSpectres.forEach((spectre) -> spectre.getSparksWithin().remove(spark));
+            addedSpectres.forEach(spectre -> spectre.getSparksWithin().add(spark));
+            removedSpectres.forEach(spectre -> spectre.getSparksWithin().remove(spark));
 
-            spark.getSpectres().forEach((spectre) -> spectreRepository.save(spectre));
+            spark.getSpectres().forEach(spectre -> spectreRepository.save(spectre));
         }
 
         return repository.save(spark);

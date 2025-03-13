@@ -30,14 +30,15 @@ public class SpaceService {
     }
 
     public List<Space> match(String namePattern) {
-        if (namePattern == null) {
-            return repository.findAll();
-        } else {
-            namePattern = EscapeCharacter.DEFAULT.escape(namePattern);
-            var jpqlPattern = namePattern.replace("*", "%");
+        return switch (namePattern) {
+            case null -> repository.findAll();
+            case String p -> {
+                p = EscapeCharacter.DEFAULT.escape(p);
+                var jpqlPattern = p.replace("*", "%");
 
-            return repository.matchByName(jpqlPattern);
-        }
+                yield repository.matchByName(jpqlPattern);
+            }
+        };
     }
 
     @Transactional
