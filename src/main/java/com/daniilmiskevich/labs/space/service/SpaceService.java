@@ -30,12 +30,11 @@ public class SpaceService {
     }
 
     public List<Space> match(String namePattern) {
+        namePattern = EscapeCharacter.DEFAULT.escape(namePattern);
         return switch (namePattern) {
             case null -> repository.findAll();
             case String p -> {
-                p = EscapeCharacter.DEFAULT.escape(p);
                 var jpqlPattern = p.replace("*", "%");
-
                 yield repository.matchByName(jpqlPattern);
             }
         };
