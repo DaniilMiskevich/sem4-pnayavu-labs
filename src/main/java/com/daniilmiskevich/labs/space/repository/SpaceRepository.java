@@ -20,7 +20,7 @@ public interface SpaceRepository {
 
     /**
      * @param jpqlPattern - jpql-like pattern, where `_` matches any character and `%` matches any
-     *        sequence of characters.
+     *                    sequence of characters.
      */
     List<Space> matchByName(String jpqlPattern);
 

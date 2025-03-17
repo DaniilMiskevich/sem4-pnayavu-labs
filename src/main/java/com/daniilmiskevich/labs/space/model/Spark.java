@@ -1,6 +1,7 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.Set;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,20 +52,20 @@ public class Spark {
         return name;
     }
 
-    public Space getSpace() {
-        return space;
-    }
-
-    public Set<Spectre> getSpectres() {
-        return spectres;
-    }
-
     public void setName(String value) {
         name = value;
     }
 
+    public Space getSpace() {
+        return space;
+    }
+
     public void setSpace(Space value) {
         space = value;
+    }
+
+    public Set<Spectre> getSpectres() {
+        return spectres;
     }
 
     public void setSpectres(Set<Spectre> spectres) {

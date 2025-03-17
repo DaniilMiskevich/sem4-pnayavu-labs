@@ -1,6 +1,7 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

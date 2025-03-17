@@ -2,6 +2,7 @@ package com.daniilmiskevich.labs.space.controller.dto;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import com.daniilmiskevich.labs.space.model.Spark;
 import com.daniilmiskevich.labs.space.model.Spectre;
 import com.fasterxml.jackson.annotation.JsonProperty;

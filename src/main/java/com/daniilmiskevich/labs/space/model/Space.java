@@ -1,6 +1,7 @@
 package com.daniilmiskevich.labs.space.model;
 
 import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,12 +41,12 @@ public class Space {
         return name;
     }
 
-    public List<Spark> getSparks() {
-        return sparks;
-    }
-
     public void setName(String value) {
         name = value;
+    }
+
+    public List<Spark> getSparks() {
+        return sparks;
     }
 
     public void setSparks(List<Spark> sparks) {

@@ -3,6 +3,7 @@ package com.daniilmiskevich.labs.space.repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.springframework.stereotype.Repository;
 
 import com.daniilmiskevich.labs.space.model.Spark;
@@ -16,7 +17,7 @@ public interface SparkRepository {
 
     /**
      * @param jpqlPattern - jpql-like pattern, where `_` matches any character and `%` matches any
-     *        sequence of characters.
+     *                    sequence of characters.
      */
     List<Spark> match(String jpqlPattern, Set<String> spectreNames);
 

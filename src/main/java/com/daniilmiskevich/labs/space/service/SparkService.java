@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.data.jpa.repository.query.EscapeCharacter;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class SparkService {
     private final SpectreRepository spectreRepository;
 
     public SparkService(SparkRepository repository, SpaceRepository spaceRepository,
-        SpectreRepository spectreRepository) {
+                        SpectreRepository spectreRepository) {
         this.repository = repository;
         this.spaceRepository = spaceRepository;
         this.spectreRepository = spectreRepository;
@@ -50,7 +51,7 @@ public class SparkService {
 
             var spectreNames = !spectrePattern.isEmpty()
                 ? Arrays.stream(spectrePattern.split(","))
-                    .collect(Collectors.toSet())
+                .collect(Collectors.toSet())
                 : Set.<String>of();
 
             return repository.match(jpqlNamePattern, spectreNames);
