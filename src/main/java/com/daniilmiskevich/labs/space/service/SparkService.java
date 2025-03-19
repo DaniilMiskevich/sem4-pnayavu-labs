@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.query.EscapeCharacter;
 import org.springframework.stereotype.Service;
-
+import com.daniilmiskevich.labs.space.cache.SparkCache;
 import com.daniilmiskevich.labs.space.model.Spark;
 import com.daniilmiskevich.labs.space.repository.SpaceRepository;
 import com.daniilmiskevich.labs.space.repository.SparkRepository;
@@ -24,11 +24,18 @@ public class SparkService {
     private final SpaceRepository spaceRepository;
     private final SpectreRepository spectreRepository;
 
-    public SparkService(SparkRepository repository, SpaceRepository spaceRepository,
-                        SpectreRepository spectreRepository) {
+    private final SparkCache cache;
+
+    public SparkService(
+        SparkRepository repository,
+        SpaceRepository spaceRepository,
+        SpectreRepository spectreRepository,
+        SparkCache cache) {
         this.repository = repository;
         this.spaceRepository = spaceRepository;
         this.spectreRepository = spectreRepository;
+
+        this.cache = cache;
     }
 
     public Optional<Spark> findById(Long id) {
@@ -36,6 +43,7 @@ public class SparkService {
     }
 
     public List<Spark> match(String namePattern, String spectrePattern) {
+
         if (namePattern == null && spectrePattern == null) {
             return repository.findAll();
         } else {
@@ -51,10 +59,17 @@ public class SparkService {
 
             var spectreNames = !spectrePattern.isEmpty()
                 ? Arrays.stream(spectrePattern.split(","))
-                .collect(Collectors.toSet())
+                    .collect(Collectors.toSet())
                 : Set.<String>of();
 
-            return repository.match(jpqlNamePattern, spectreNames);
+            var cached = cache.getByNamePatternAndSpectreNames(namePattern, spectreNames);
+            if (cached != null) {
+                return cached;
+            }
+
+            var fetched = repository.match(jpqlNamePattern, spectreNames);
+            cache.putByNamePatternAndSpectreNames(namePattern, spectreNames, fetched);
+            return fetched;
         }
     }
 
@@ -68,7 +83,14 @@ public class SparkService {
 
         spark.getSpectres().forEach(spectreRepository::save);
 
-        return repository.save(spark);
+        var newSpark = repository.save(spark);
+        cache.invalidateByNameAndSpectreNames(
+            newSpark.getName(),
+            newSpark.getSpectres()
+                .stream()
+                .map(spectre -> spectre.getName())
+                .collect(Collectors.toSet()));
+        return newSpark;
     }
 
     @Transactional
@@ -106,11 +128,30 @@ public class SparkService {
             spark.getSpectres().forEach(spectreRepository::save);
         }
 
-        return repository.save(spark);
+        var newSpark = repository.save(spark);
+        cache.invalidateByNameAndSpectreNames(
+            newSpark.getName(),
+            newSpark.getSpectres()
+                .stream()
+                .map(spectre -> spectre.getName())
+                .collect(Collectors.toSet()));
+        return newSpark;
     }
 
     public void deleteById(Long id) {
+        var spark = repository.findById(id);
+        if (spark.isEmpty()) {
+            return;
+        }
+
         repository.deleteById(id);
+
+        cache.invalidateByNameAndSpectreNames(
+            spark.get().getName(),
+            spark.get().getSpectres()
+                .stream()
+                .map(spectre -> spectre.getName())
+                .collect(Collectors.toSet()));
     }
 
 }

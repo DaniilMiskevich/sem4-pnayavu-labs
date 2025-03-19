@@ -49,21 +49,19 @@ public class Spectre {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
+        } else if (obj == null) {
+            return false;
+        } else if (getClass() != obj.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+
+        var other = (Spectre) obj;
+        if (name == null && other.name != null) {
             return false;
-        }
-        Spectre other = (Spectre) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
         } else if (!name.equals(other.name)) {
             return false;
         }
+
         return true;
     }
 
