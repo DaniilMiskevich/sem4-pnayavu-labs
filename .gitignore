@@ -37,4 +37,9 @@ out/
 .vscode/
 
 
+### credentials ###
 src/main/resources/credentials.properties
+
+### logs ###
+*.log
+
