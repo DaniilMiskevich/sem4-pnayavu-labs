@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogAspect.class);
 
     @Before("execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))")
     public void controllerMethodAccessed(JoinPoint joinPoint) {
-        logger.info("Controller method accessed: {}.{}",
+        LOGGER.info("Controller method accessed: {}.{}",
             joinPoint.getTarget().getClass().getName(),
             joinPoint.getSignature().getName());
     }
@@ -26,7 +26,7 @@ public class LogAspect {
         pointcut = "execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))",
         returning = "result")
     public void controllerMethodReturned(JoinPoint joinPoint, Object result) {
-        logger.info("Controller method returned: {}.{} -> {}",
+        LOGGER.info("Controller method returned: {}.{} -> {}",
             joinPoint.getTarget().getClass().getName(),
             joinPoint.getSignature().getName(),
             result);
@@ -36,7 +36,7 @@ public class LogAspect {
         pointcut = "execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))",
         throwing = "exception")
     public void controllerMethodThrew(JoinPoint joinPoint, Exception exception) {
-        logger.error("Controller method threw: {}.{} -> {}",
+        LOGGER.error("Controller method threw: {}.{} -> {}",
             joinPoint.getTarget().getClass().getName(),
             joinPoint.getSignature().getName(),
             exception.getClass().getName());

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.query.EscapeCharacter;
 import org.springframework.stereotype.Service;
 import com.daniilmiskevich.labs.space.cache.SparkCache;
 import com.daniilmiskevich.labs.space.model.Spark;
+import com.daniilmiskevich.labs.space.model.Spectre;
 import com.daniilmiskevich.labs.space.repository.SpaceRepository;
 import com.daniilmiskevich.labs.space.repository.SparkRepository;
 import com.daniilmiskevich.labs.space.repository.SpectreRepository;
@@ -88,7 +89,7 @@ public class SparkService {
             newSpark.getName(),
             newSpark.getSpectres()
                 .stream()
-                .map(spectre -> spectre.getName())
+                .map(Spectre::getName)
                 .collect(Collectors.toSet()));
         return newSpark;
     }
@@ -133,7 +134,7 @@ public class SparkService {
             newSpark.getName(),
             newSpark.getSpectres()
                 .stream()
-                .map(spectre -> spectre.getName())
+                .map(Spectre::getName)
                 .collect(Collectors.toSet()));
         return newSpark;
     }
@@ -152,7 +153,7 @@ public class SparkService {
             spark.get().getName(),
             spark.get().getSpectres()
                 .stream()
-                .map(spectre -> spectre.getName())
+                .map(Spectre::getName)
                 .collect(Collectors.toSet()));
     }
 

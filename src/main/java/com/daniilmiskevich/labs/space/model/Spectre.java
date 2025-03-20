@@ -56,8 +56,10 @@ public class Spectre {
         }
 
         var other = (Spectre) obj;
-        if (name == null && other.name != null) {
-            return false;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
         } else if (!name.equals(other.name)) {
             return false;
         }

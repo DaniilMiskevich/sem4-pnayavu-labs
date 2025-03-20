@@ -30,7 +30,7 @@ public class LogService {
         }
 
         try {
-            var lines = Files.readAllLines(log.toPath())
+            return Files.readAllLines(log.toPath())
                 .stream()
                 .filter(line -> {
                     try {
@@ -38,14 +38,11 @@ public class LogService {
                         var timestamp =
                             LocalDateTime.parse(timestampString, DateTimeFormatter.ISO_DATE_TIME);
                         return timestamp.isAfter(start) && timestamp.isBefore(end);
-                    } catch (DateTimeParseException e) {
-                        return false;
-                    } catch (IndexOutOfBoundsException e) {
+                    } catch (DateTimeParseException | IndexOutOfBoundsException e) {
                         return false;
                     }
                 })
                 .toList();
-            return lines;
         } catch (IOException e) {
             return List.of();
         }

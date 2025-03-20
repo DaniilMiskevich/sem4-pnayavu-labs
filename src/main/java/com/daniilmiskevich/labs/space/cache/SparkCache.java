@@ -15,7 +15,7 @@ public class SparkCache {
     private static record CacheEntry(String namePattern, Set<String> spectreNames) {
     }
 
-    private final Logger logger = LoggerFactory.getLogger(SparkCache.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SparkCache.class);
 
 
     private final Map<CacheEntry, List<Spark>> cache;
@@ -26,8 +26,8 @@ public class SparkCache {
             protected boolean removeEldestEntry(Map.Entry<CacheEntry, List<Spark>> eldest) {
                 var shouldInvalidate = size() > maxSize;
 
-                if (shouldInvalidate) {
-                    logger.info("Invalidated: {}", eldest.getKey());
+                if (LOGGER.isInfoEnabled() && shouldInvalidate) {
+                    LOGGER.info("Invalidated: {}", eldest.getKey());
                 }
 
                 return shouldInvalidate;
@@ -41,7 +41,9 @@ public class SparkCache {
         List<Spark> value) {
         var entry = new CacheEntry(namePattern, spectreNames);
 
-        logger.info("Put into cache: {}", entry);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Put into cache: {}", entry);
+        }
 
         return cache.put(entry, value);
 
@@ -54,7 +56,13 @@ public class SparkCache {
 
         var value = cache.get(entry);
 
-        logger.info(value == null ? "Cache miss!" : "Taken from cache: {}", entry);
+        if (LOGGER.isInfoEnabled()) {
+            if (value != null) {
+                LOGGER.info("Taken from cache: {}", entry);
+            } else {
+                LOGGER.info("Cache miss!");
+            }
+        }
 
         return value;
     }
@@ -65,8 +73,8 @@ public class SparkCache {
             var shouldInvalidate = name.matches(regexpNamePattern)
                 || spectreNames.stream().anyMatch(entry.spectreNames::contains);
 
-            if (shouldInvalidate) {
-                logger.info("Invalidated: {}", entry);
+            if (LOGGER.isInfoEnabled() && shouldInvalidate) {
+                LOGGER.info("Invalidated: {}", entry);
             }
 
             return shouldInvalidate;
