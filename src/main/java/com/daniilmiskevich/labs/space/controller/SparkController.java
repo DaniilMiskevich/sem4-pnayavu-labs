@@ -2,6 +2,8 @@ package com.daniilmiskevich.labs.space.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,11 +33,8 @@ public class SparkController {
     @GetMapping("")
     public List<SparkResponseDto> search(
         @RequestParam(name = "name", required = false) String namePattern,
+        @SparkRequestDto.SpectreName(message = "", doAcceptPatterns = true)
         @RequestParam(name = "spectres", required = false) String spectrePattern) {
-        if (!isValidSpectrePattern(spectrePattern)) {
-            return List.of();
-        }
-
         return service.match(namePattern, spectrePattern)
             .stream()
             .map(SparkResponseDto::new)
@@ -43,7 +42,7 @@ public class SparkController {
     }
 
     @GetMapping("/{id}")
-    public SparkResponseDto getById(@PathVariable Long id) {
+    public SparkResponseDto getById(@NotNull @PathVariable Long id) {
         var sparkById = service.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -52,28 +51,21 @@ public class SparkController {
 
     @PostMapping("")
     public SparkResponseDto create(
-        @RequestParam(name = "space_id") Long spaceId,
-        @RequestBody SparkRequestDto spark) {
+        @NotNull @RequestParam(name = "space_id") Long spaceId,
+        @Valid @RequestBody SparkRequestDto spark) {
         return new SparkResponseDto(service.create(spaceId, spark.toSpark(null)));
     }
 
     @PatchMapping("/{id}")
-    public SparkResponseDto updateById(@PathVariable Long id, @RequestBody SparkRequestDto spark) {
+    public SparkResponseDto updateById(
+        @NotNull @PathVariable Long id,
+        @Valid @RequestBody SparkRequestDto spark) {
         return new SparkResponseDto(service.update(spark.toSpark(id)));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+    public void deleteById(@NotNull @PathVariable Long id) {
         service.deleteById(id);
-    }
-
-    private boolean isValidSpectreName(String name) {
-        return name.matches("^[a-z-_][a-z0-9-_]*$");
-    }
-
-    private boolean isValidSpectrePattern(String pattern) {
-        return pattern == null || isValidSpectreName(pattern.replace(",", ""));
-
     }
 
 }

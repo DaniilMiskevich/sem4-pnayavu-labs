@@ -3,6 +3,7 @@ package com.daniilmiskevich.labs.space.controller;
 import java.io.IOException;
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import com.daniilmiskevich.labs.space.controller.dto.SpaceResponseDto;
 import com.daniilmiskevich.labs.space.service.SpaceService;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/spaces")
@@ -33,11 +35,10 @@ public class SpaceController {
 
     @GetMapping("")
     public List<SpaceResponseDto> searchByName(
+        @SpaceRequestDto.Name(
+            message = "Name pattern should only contain latin letters, digits, hyphens and underscores. Asterisk is used to match any sequence.",
+            doAcceptPatterns = true)
         @RequestParam(name = "name", required = false) String namePattern) {
-        if (!isValidNamePattern(namePattern)) {
-            return List.of();
-        }
-
         return service.match(namePattern)
             .stream()
             .map(SpaceResponseDto::new)
@@ -56,17 +57,16 @@ public class SpaceController {
         }
     }
 
-    private SpaceResponseDto getById(Long id) {
+    private SpaceResponseDto getById(@NotNull Long id) {
         var spaceById = service.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return new SpaceResponseDto(spaceById);
     }
 
-    private void getByName(String name, HttpServletResponse response) {
-        if (!isValidName(name)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    private void getByName(
+        @SpaceRequestDto.Name(message = "Name pattern should only contain latin letters, digits, hyphens and underscores. Asterisk is used to match any sequence.") String name,
+        HttpServletResponse response) {
         var spaceByName = service.findByName(name)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -78,34 +78,20 @@ public class SpaceController {
     }
 
     @PostMapping("")
-    public SpaceResponseDto create(@RequestBody SpaceRequestDto space) {
-        if (!isValidName(space.name())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
+    public SpaceResponseDto create(@Valid @RequestBody SpaceRequestDto space) {
         return new SpaceResponseDto(service.create(space.toSpace(null)));
     }
 
     @PatchMapping("/{id}")
-    public SpaceResponseDto updateById(@PathVariable Long id, @RequestBody SpaceRequestDto space) {
-        if (!isValidName(space.name())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
+    public SpaceResponseDto updateById(
+        @NotNull @PathVariable Long id,
+        @Valid @RequestBody SpaceRequestDto space) {
         return new SpaceResponseDto(service.update(space.toSpace(id)));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+    public void deleteById(@NotNull @PathVariable Long id) {
         service.deleteById(id);
-    }
-
-    private boolean isValidName(String name) {
-        return name.matches("^[A-Za-z-_][A-Za-z-_0-9]*$");
-    }
-
-    private boolean isValidNamePattern(String pattern) {
-        return pattern == null || isValidName(pattern.replace("*", ""));
     }
 
 }
