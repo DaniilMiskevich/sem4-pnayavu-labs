@@ -27,7 +27,7 @@ public class SparkCache {
                 var shouldInvalidate = size() > maxSize;
 
                 if (shouldInvalidate) {
-                    logger.info(String.format("Invalidated: %s", eldest.getKey().toString()));
+                    logger.info("Invalidated: {}", eldest.getKey());
                 }
 
                 return shouldInvalidate;
@@ -41,7 +41,7 @@ public class SparkCache {
         List<Spark> value) {
         var entry = new CacheEntry(namePattern, spectreNames);
 
-        logger.info(String.format("Put into cache: %s", entry.toString()));
+        logger.info("Put into cache: {}", entry);
 
         return cache.put(entry, value);
 
@@ -54,9 +54,7 @@ public class SparkCache {
 
         var value = cache.get(entry);
 
-        logger.info(value == null
-            ? "Cache miss!"
-            : String.format("Taken from cache: %s", entry.toString()));
+        logger.info(value == null ? "Cache miss!" : "Taken from cache: {}", entry);
 
         return value;
     }
@@ -68,7 +66,7 @@ public class SparkCache {
                 || spectreNames.stream().anyMatch(entry.spectreNames::contains);
 
             if (shouldInvalidate) {
-                logger.info(String.format("Invalidated: %s", entry.toString()));
+                logger.info("Invalidated: {}", entry);
             }
 
             return shouldInvalidate;

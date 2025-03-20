@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import org.hibernate.Hibernate;
 import org.springframework.data.jpa.repository.query.EscapeCharacter;
 import org.springframework.stereotype.Service;
 import com.daniilmiskevich.labs.space.cache.SparkCache;
@@ -138,11 +138,13 @@ public class SparkService {
         return newSpark;
     }
 
+    @Transactional
     public void deleteById(Long id) {
         var spark = repository.findById(id);
         if (spark.isEmpty()) {
             return;
         }
+        Hibernate.initialize(spark.get().getSpectres());
 
         repository.deleteById(id);
 
