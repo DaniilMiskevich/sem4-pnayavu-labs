@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.daniilmiskevich.labs.space.controller.dto.SpaceRequestDto;
+import com.daniilmiskevich.labs.space.controller.dto.SpaceRequestDto.Name;
 import com.daniilmiskevich.labs.space.controller.dto.SpaceResponseDto;
 import com.daniilmiskevich.labs.space.service.SpaceService;
-
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -35,11 +34,8 @@ public class SpaceController {
 
     @GetMapping("")
     public List<SpaceResponseDto> searchByName(
-        @SpaceRequestDto.Name(
-            message
-                = "Name pattern should only contain latin letters, digits, hyphens and underscores."
-                + "Asterisk is used to match any sequence.",
-            doAcceptPatterns = true)
+        @Name(message = Name.PATTERN_MESSAGE, doAcceptPatterns = true)
+
         @RequestParam(name = "name", required = false) String namePattern) {
         return service.match(namePattern)
             .stream()
@@ -61,23 +57,21 @@ public class SpaceController {
 
     private SpaceResponseDto getById(@NotNull Long id) {
         var spaceById = service.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new EntityNotFoundException());
 
         return new SpaceResponseDto(spaceById);
     }
 
     private void getByName(
-        @SpaceRequestDto.Name(message
-            = "Name pattern should only contain latin letters, digits, hyphens and underscores."
-            + "Asterisk is used to match any sequence.") String name,
+        @Name String name,
         HttpServletResponse response) {
         var spaceByName = service.findByName(name)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new EntityNotFoundException());
 
         try {
             response.sendRedirect(spaceByName.getId().toString());
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException("Redirect failed!", e);
         }
     }
 

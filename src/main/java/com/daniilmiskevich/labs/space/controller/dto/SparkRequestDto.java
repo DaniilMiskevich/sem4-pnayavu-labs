@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,9 +19,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record SparkRequestDto(
     @NotBlank(message = "Name should not be blank") String name,
-    @JsonProperty("spectre_names")
-    // TODO!
-    Set<@SpectreName(message = "Spectre names should only contain ........") String> spectreNames) {
+    @JsonProperty("spectre_names") Set<@SpectreName String> spectreNames) {
 
     public Spark toSpark(Long id) {
         return new Spark(
@@ -39,7 +38,13 @@ public record SparkRequestDto(
     @Retention(RetentionPolicy.RUNTIME)
     @Constraint(validatedBy = SpectreNameValidator.class)
     public @interface SpectreName {
-        String message();
+        public static String DEFAULT_MESSAGE =
+            "Spectre name should only contain lowercase latin letters, digits and hyphens.";
+        public static String PATTERN_MESSAGE =
+            "Spectre pattern should be a comma-separated list of names,"
+                + "which should only contain lowercase latin letters, digits and hyphens.";
+
+        String message() default DEFAULT_MESSAGE;
 
         boolean doAcceptPatterns() default false;
 
@@ -47,6 +52,7 @@ public record SparkRequestDto(
 
         Class<? extends Payload>[] payload() default {};
     }
+
 
     private static class SpectreNameValidator implements ConstraintValidator<SpectreName, String> {
 
@@ -62,7 +68,8 @@ public record SparkRequestDto(
             if (name == null) {
                 return doAcceptPatterns;
             }
-            return name.matches("^[a-z][a-z0-9-_]*$");
+            return Arrays.stream(doAcceptPatterns ? name.split(",") : new String[] {name})
+                .allMatch(n -> n.matches("^[a-z][a-z0-9-]*$"));
         }
     }
 }

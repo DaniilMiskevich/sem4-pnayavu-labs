@@ -3,13 +3,13 @@ package com.daniilmiskevich.labs.dev.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import com.daniilmiskevich.labs.dev.service.LogService;
+import com.daniilmiskevich.labs.exceptions.exception.InvalidRangeException;
+import jakarta.validation.ValidationException;
 
 @RestController
 @RequestMapping("/dev/logs")
@@ -29,20 +29,28 @@ public class LogController {
     public String filter(
         @RequestParam(name = "start", required = false) String startString,
         @RequestParam(name = "end", required = false) String endString) {
-        try {
-            var start =
-                startString != null
-                    ? LocalDateTime.parse(startString, START_END_FORMATTER)
-                    : LocalDateTime.of(0, 1, 1, 0, 0);
-            var end =
-                endString != null
-                    ? LocalDateTime.parse(endString, START_END_FORMATTER)
-                    : LocalDateTime.now();
-
-            return String.join("\n", service.filtered(start, end));
-        } catch (DateTimeParseException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        var start = LocalDateTime.MIN;
+        var end = LocalDateTime.MAX;
+        if (startString != null) {
+            try {
+                start = LocalDateTime.parse(startString, START_END_FORMATTER);
+            } catch (DateTimeParseException e) {
+                throw new ValidationException(e.getMessage());
+            }
         }
+        if (endString != null) {
+            try {
+                end = LocalDateTime.parse(endString, START_END_FORMATTER);
+            } catch (DateTimeParseException e) {
+                throw new ValidationException(e.getMessage());
+            }
+        }
+
+        if (end.isBefore(start)) {
+            throw new InvalidRangeException(start, end);
+        }
+
+        return String.join("\n", service.filtered(start, end));
     }
 
 }

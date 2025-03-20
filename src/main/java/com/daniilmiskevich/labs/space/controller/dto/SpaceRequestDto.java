@@ -11,9 +11,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public record SpaceRequestDto(
-    @Name(message = "Name should contain only latin letters, digits, hyphens and underscores.")
-    String name) {
+public record SpaceRequestDto(@Name String name) {
 
     public Space toSpace(Long id) {
         return new Space(id, name);
@@ -23,7 +21,13 @@ public record SpaceRequestDto(
     @Retention(RetentionPolicy.RUNTIME)
     @Constraint(validatedBy = NameValidator.class)
     public @interface Name {
-        String message();
+        public static String DEFAULT_MESSAGE =
+            "Name should contain only latin letters, digits, hyphens and underscores.";
+        public static String PATTERN_MESSAGE =
+            "Name pattern should contain only latin letters, digits, hyphens and underscores;"
+                + "additionaly, asterisk can be used to match any sequence of characters.";
+
+        String message() default DEFAULT_MESSAGE;
 
         boolean doAcceptPatterns() default false;
 
@@ -45,7 +49,7 @@ public record SpaceRequestDto(
             if (name == null) {
                 return doAcceptPatterns;
             }
-            return (doAcceptPatterns ? name : name.replace("*", ""))
+            return (doAcceptPatterns ? name.replace("*", "") : name)
                 .matches("^[A-Za-z][A-Za-z-_0-9]*$");
         }
     }

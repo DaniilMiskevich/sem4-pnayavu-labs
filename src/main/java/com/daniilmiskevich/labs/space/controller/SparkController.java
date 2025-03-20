@@ -1,10 +1,9 @@
 package com.daniilmiskevich.labs.space.controller;
 
 import java.util.List;
-
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.daniilmiskevich.labs.space.controller.dto.SparkRequestDto;
+import com.daniilmiskevich.labs.space.controller.dto.SparkRequestDto.SpectreName;
 import com.daniilmiskevich.labs.space.controller.dto.SparkResponseDto;
 import com.daniilmiskevich.labs.space.service.SparkService;
 
@@ -33,7 +32,9 @@ public class SparkController {
     @GetMapping("")
     public List<SparkResponseDto> search(
         @RequestParam(name = "name", required = false) String namePattern,
-        // TODO @SparkRequestDto.SpectreName(message = "", doAcceptPatterns = true)
+
+        @SpectreName(message = SpectreName.DEFAULT_MESSAGE, doAcceptPatterns = true)
+
         @RequestParam(name = "spectres", required = false) String spectrePattern) {
         return service.match(namePattern, spectrePattern)
             .stream()
@@ -44,7 +45,7 @@ public class SparkController {
     @GetMapping("/{id}")
     public SparkResponseDto getById(@NotNull @PathVariable Long id) {
         var sparkById = service.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new EntityNotFoundException());
 
         return new SparkResponseDto(sparkById);
     }
