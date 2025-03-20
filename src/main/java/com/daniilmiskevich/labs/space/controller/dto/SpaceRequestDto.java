@@ -4,6 +4,7 @@ import com.daniilmiskevich.labs.space.model.Space;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,6 +26,10 @@ public record SpaceRequestDto(
         String message();
 
         boolean doAcceptPatterns() default false;
+
+        Class<?>[] groups() default {};
+
+        Class<? extends Payload>[] payload() default {};
     }
 
     private static class NameValidator implements ConstraintValidator<Name, String> {

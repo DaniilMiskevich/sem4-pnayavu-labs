@@ -36,7 +36,9 @@ public class SpaceController {
     @GetMapping("")
     public List<SpaceResponseDto> searchByName(
         @SpaceRequestDto.Name(
-            message = "Name pattern should only contain latin letters, digits, hyphens and underscores. Asterisk is used to match any sequence.",
+            message
+                = "Name pattern should only contain latin letters, digits, hyphens and underscores."
+                + "Asterisk is used to match any sequence.",
             doAcceptPatterns = true)
         @RequestParam(name = "name", required = false) String namePattern) {
         return service.match(namePattern)
@@ -65,7 +67,9 @@ public class SpaceController {
     }
 
     private void getByName(
-        @SpaceRequestDto.Name(message = "Name pattern should only contain latin letters, digits, hyphens and underscores. Asterisk is used to match any sequence.") String name,
+        @SpaceRequestDto.Name(message
+            = "Name pattern should only contain latin letters, digits, hyphens and underscores."
+            + "Asterisk is used to match any sequence.") String name,
         HttpServletResponse response) {
         var spaceByName = service.findByName(name)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

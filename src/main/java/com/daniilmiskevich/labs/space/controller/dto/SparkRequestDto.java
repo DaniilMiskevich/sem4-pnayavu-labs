@@ -19,7 +19,8 @@ import jakarta.validation.constraints.NotBlank;
 public record SparkRequestDto(
     @NotBlank(message = "Name should not be blank") String name,
     @JsonProperty("spectre_names")
-    Set<@SpectreName(message = "Spectre names should only contain ") String> spectreNames) {
+    // TODO!
+    Set<@SpectreName(message = "Spectre names should only contain ........") String> spectreNames) {
 
     public Spark toSpark(Long id) {
         return new Spark(
@@ -27,9 +28,9 @@ public record SparkRequestDto(
             name,
             spectreNames != null
                 ? spectreNames
-                .stream()
-                .map(Spectre::new)
-                .collect(Collectors.toSet())
+                    .stream()
+                    .map(Spectre::new)
+                    .collect(Collectors.toSet())
                 : null);
 
     }
@@ -41,6 +42,10 @@ public record SparkRequestDto(
         String message();
 
         boolean doAcceptPatterns() default false;
+
+        Class<?>[] groups() default {};
+
+        Class<? extends Payload>[] payload() default {};
     }
 
     private static class SpectreNameValidator implements ConstraintValidator<SpectreName, String> {

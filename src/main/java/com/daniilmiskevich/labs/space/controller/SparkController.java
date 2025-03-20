@@ -33,7 +33,7 @@ public class SparkController {
     @GetMapping("")
     public List<SparkResponseDto> search(
         @RequestParam(name = "name", required = false) String namePattern,
-        @SparkRequestDto.SpectreName(message = "", doAcceptPatterns = true)
+        // TODO @SparkRequestDto.SpectreName(message = "", doAcceptPatterns = true)
         @RequestParam(name = "spectres", required = false) String spectrePattern) {
         return service.match(namePattern, spectrePattern)
             .stream()
