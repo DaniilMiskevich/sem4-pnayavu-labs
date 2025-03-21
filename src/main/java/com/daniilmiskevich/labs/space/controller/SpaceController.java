@@ -44,7 +44,7 @@ public class SpaceController {
     }
 
     @GetMapping("/{idOrName}")
-    public ResponseEntity<?> getByIdOrName(@PathVariable String idOrName) {
+    public ResponseEntity<SpaceResponseDto> getByIdOrName(@PathVariable String idOrName) {
         try {
             var id = Long.decode(idOrName);
             return ResponseEntity
@@ -62,7 +62,7 @@ public class SpaceController {
         return new SpaceResponseDto(spaceById);
     }
 
-    private ResponseEntity<Void> getByName(@Name String name) {
+    private ResponseEntity<SpaceResponseDto> getByName(@Name String name) {
         var spaceByName = service.findByName(name)
             .orElseThrow(EntityNotFoundException::new);
 
