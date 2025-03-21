@@ -1,9 +1,11 @@
 package com.daniilmiskevich.labs.space.controller;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,13 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.daniilmiskevich.labs.space.controller.dto.SpaceRequestDto;
 import com.daniilmiskevich.labs.space.controller.dto.SpaceRequestDto.Name;
 import com.daniilmiskevich.labs.space.controller.dto.SpaceResponseDto;
 import com.daniilmiskevich.labs.space.service.SpaceService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -44,35 +44,32 @@ public class SpaceController {
     }
 
     @GetMapping("/{idOrName}")
-    public SpaceResponseDto getByIdOrName(
-        @PathVariable String idOrName,
-        HttpServletResponse response) {
+    public ResponseEntity<?> getByIdOrName(@PathVariable String idOrName) {
         try {
-            return getById(Long.decode(idOrName));
+            var id = Long.decode(idOrName);
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(getById(id));
         } catch (NumberFormatException e) {
-            getByName(idOrName, response);
-            return null;
+            return getByName(idOrName);
         }
     }
 
     private SpaceResponseDto getById(@NotNull Long id) {
         var spaceById = service.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException());
+            .orElseThrow(EntityNotFoundException::new);
 
         return new SpaceResponseDto(spaceById);
     }
 
-    private void getByName(
-        @Name String name,
-        HttpServletResponse response) {
+    private ResponseEntity<Void> getByName(@Name String name) {
         var spaceByName = service.findByName(name)
-            .orElseThrow(() -> new EntityNotFoundException());
+            .orElseThrow(EntityNotFoundException::new);
 
-        try {
-            response.sendRedirect(spaceByName.getId().toString());
-        } catch (IOException e) {
-            throw new RuntimeException("Redirect failed!", e);
-        }
+        return ResponseEntity
+            .status(HttpStatus.FOUND)
+            .location(URI.create(spaceByName.getId().toString()))
+            .build();
     }
 
     @PostMapping("")

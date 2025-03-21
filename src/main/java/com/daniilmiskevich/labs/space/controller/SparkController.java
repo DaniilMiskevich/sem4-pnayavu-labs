@@ -45,7 +45,7 @@ public class SparkController {
     @GetMapping("/{id}")
     public SparkResponseDto getById(@NotNull @PathVariable Long id) {
         var sparkById = service.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException());
+            .orElseThrow(EntityNotFoundException::new);
 
         return new SparkResponseDto(sparkById);
     }
