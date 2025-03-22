@@ -26,17 +26,35 @@ public class LogAspect {
         pointcut = "execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))",
         returning = "result")
     public void controllerMethodReturned(JoinPoint joinPoint, Object result) {
-        LOGGER.info("Controller method returned: {}.{} -> {}",
+        LOGGER.trace("Controller method returned: {}.{}",
             joinPoint.getTarget().getClass().getName(),
-            joinPoint.getSignature().getName(),
-            result);
+            joinPoint.getSignature().getName());
     }
 
     @AfterThrowing(
         pointcut = "execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))",
         throwing = "exception")
     public void controllerMethodThrew(JoinPoint joinPoint, Exception exception) {
-        LOGGER.error("Controller method threw: {}.{} -> {}",
+        LOGGER.warn("Controller method threw: {}.{} -> {}",
+            joinPoint.getTarget().getClass().getName(),
+            joinPoint.getSignature().getName(),
+            exception.getClass().getName());
+    }
+
+    @AfterReturning(
+        pointcut = "execution(public * com.daniilmiskevich.labs.*.repository.*.*(..))",
+        returning = "result")
+    public void repositoryMethodReturned(JoinPoint joinPoint, Object result) {
+        LOGGER.trace("Repository method returned: {}.{}",
+            joinPoint.getTarget().getClass().getName(),
+            joinPoint.getSignature().getName());
+    }
+
+    @AfterThrowing(
+        pointcut = "execution(public * com.daniilmiskevich.labs.*.repository.*.*(..))",
+        throwing = "exception")
+    public void repositoryMethodThrew(JoinPoint joinPoint, Exception exception) {
+        LOGGER.warn("Repository method threw: {}.{} -> {}",
             joinPoint.getTarget().getClass().getName(),
             joinPoint.getSignature().getName(),
             exception.getClass().getName());
