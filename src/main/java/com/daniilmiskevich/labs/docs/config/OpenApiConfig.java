@@ -3,7 +3,6 @@ package com.daniilmiskevich.labs.docs.config;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
-import io.swagger.v3.oas.models.OpenAPI;
 
 @OpenAPIDefinition(
     info = @Info(
