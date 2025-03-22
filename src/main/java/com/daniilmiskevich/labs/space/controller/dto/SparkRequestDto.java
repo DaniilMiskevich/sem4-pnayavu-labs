@@ -11,14 +11,22 @@ import java.util.stream.Collectors;
 import com.daniilmiskevich.labs.space.model.Spark;
 import com.daniilmiskevich.labs.space.model.Spectre;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "Request DTO for creating or updating a spark")
 public record SparkRequestDto(
-    @NotBlank(message = "Name should not be blank") String name,
+    @Schema(
+        description = "Name of the spark",
+        example = "This is an example spark name.")
+    String name,
+    @Schema(
+        description = "Set of spectre names associated with the spark",
+        example = "[\"foo\", \"bar\", \"foo-bar\"]",
+        pattern = "^[a-z][a-z-0-9]*$")
     @JsonProperty("spectre_names") Set<@SpectreName String> spectreNames) {
 
     public Spark toSpark(Long id) {
@@ -27,9 +35,9 @@ public record SparkRequestDto(
             name,
             spectreNames != null
                 ? spectreNames
-                    .stream()
-                    .map(Spectre::new)
-                    .collect(Collectors.toSet())
+                .stream()
+                .map(Spectre::new)
+                .collect(Collectors.toSet())
                 : null);
 
     }
@@ -38,9 +46,9 @@ public record SparkRequestDto(
     @Retention(RetentionPolicy.RUNTIME)
     @Constraint(validatedBy = SpectreNameValidator.class)
     public @interface SpectreName {
-        public static String DEFAULT_MESSAGE =
+        String DEFAULT_MESSAGE =
             "Spectre name should only contain lowercase latin letters, digits and hyphens.";
-        public static String PATTERN_MESSAGE =
+        String PATTERN_MESSAGE =
             "Spectre pattern should be a comma-separated list of names,"
                 + "which should only contain lowercase latin letters, digits and hyphens.";
 
@@ -68,7 +76,7 @@ public record SparkRequestDto(
             if (name == null) {
                 return doAcceptPatterns;
             }
-            return Arrays.stream(doAcceptPatterns ? name.split(",") : new String[] {name})
+            return Arrays.stream(doAcceptPatterns ? name.split(",") : new String[]{name})
                 .allMatch(n -> n.matches("^[a-z][a-z0-9-]*$"));
         }
     }

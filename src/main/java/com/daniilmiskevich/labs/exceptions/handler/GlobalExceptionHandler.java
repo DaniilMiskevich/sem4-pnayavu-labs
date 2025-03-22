@@ -1,6 +1,7 @@
 package com.daniilmiskevich.labs.exceptions.handler;
 
 import java.util.List;
+
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -30,23 +31,20 @@ public class GlobalExceptionHandler {
         TypeMismatchException.class,
     })
     public ResponseEntity<ApiError> handleValidationException(Exception e) {
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ApiError(e));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
-        return ResponseEntity
-            .status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ApiError(e));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrityViolationException(
         DataIntegrityViolationException e) {
-        return ResponseEntity
-            .status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(new ApiError(e));
     }
 

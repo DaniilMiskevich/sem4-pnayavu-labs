@@ -1,6 +1,7 @@
 package com.daniilmiskevich.labs.space.controller.dto;
 
 import com.daniilmiskevich.labs.space.model.Space;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -11,7 +12,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public record SpaceRequestDto(@Name String name) {
+@Schema(description = "Request DTO for creating or updating a space")
+public record SpaceRequestDto(
+    @Schema(
+        description = "Name of the space",
+        example = "fu11y_compliant-spaceNAM3",
+        pattern = "^[A-Za-z][A-Za-z-_0-9]*$")
+    @Name String name) {
 
     public Space toSpace(Long id) {
         return new Space(id, name);
@@ -21,11 +28,11 @@ public record SpaceRequestDto(@Name String name) {
     @Retention(RetentionPolicy.RUNTIME)
     @Constraint(validatedBy = NameValidator.class)
     public @interface Name {
-        public static String DEFAULT_MESSAGE =
+        String DEFAULT_MESSAGE =
             "Name should contain only latin letters, digits, hyphens and underscores.";
-        public static String PATTERN_MESSAGE =
+        String PATTERN_MESSAGE =
             "Name pattern should contain only latin letters, digits, hyphens and underscores;"
-                + "additionaly, asterisk can be used to match any sequence of characters.";
+                + "additionally, asterisk can be used to match any sequence of characters.";
 
         String message() default DEFAULT_MESSAGE;
 

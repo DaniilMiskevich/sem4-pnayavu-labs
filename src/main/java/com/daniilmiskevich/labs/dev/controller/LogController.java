@@ -3,6 +3,8 @@ package com.daniilmiskevich.labs.dev.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +15,7 @@ import jakarta.validation.ValidationException;
 
 @RestController
 @RequestMapping("/dev/logs")
+@Hidden
 public class LogController {
 
     private static final DateTimeFormatter START_END_FORMATTER =
