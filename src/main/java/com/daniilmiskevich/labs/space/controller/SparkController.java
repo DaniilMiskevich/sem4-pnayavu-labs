@@ -90,6 +90,30 @@ public class SparkController {
     }
 
     @Operation(
+        summary = "create a lot of new sparks at once",
+        description = "Creates a lot of new sparks at once with the provided details"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully created all the sparks"),
+    })
+    @PostMapping("/bulk")
+    public List<SparkResponseDto> createBulk(
+        @Parameter(description = "ID of the space to which the spark belongs", example = "123")
+        @NotNull @RequestParam(name = "space_id") Long spaceId,
+        @RequestBody List<@Valid SparkRequestDto> sparks) {
+        return service
+            .createAll(
+                spaceId,
+                sparks
+                    .stream()
+                    .map(sparkRequestDto -> sparkRequestDto.toSpark(null))
+                    .toList())
+            .stream()
+            .map(SparkResponseDto::new)
+            .toList();
+    }
+
+    @Operation(
         summary = "update a spark by ID",
         description = "Updates an existing spark with the provided details"
     )

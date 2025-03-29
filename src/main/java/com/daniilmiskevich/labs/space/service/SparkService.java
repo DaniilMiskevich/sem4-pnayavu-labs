@@ -1,11 +1,13 @@
 package com.daniilmiskevich.labs.space.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
+
 import org.hibernate.Hibernate;
 import org.springframework.data.jpa.repository.query.EscapeCharacter;
 import org.springframework.stereotype.Service;
@@ -60,7 +62,7 @@ public class SparkService {
 
             var spectreNames = !spectrePattern.isEmpty()
                 ? Arrays.stream(spectrePattern.split(","))
-                    .collect(Collectors.toSet())
+                .collect(Collectors.toSet())
                 : Set.<String>of();
 
             var cached = cache.getByNamePatternAndSpectreNames(namePattern, spectreNames);
@@ -82,7 +84,7 @@ public class SparkService {
         space.getSparks().add(spark);
         spark.setSpace(space);
 
-        spark.getSpectres().forEach(spectreRepository::save);
+        spectreRepository.saveAll(spark.getSpectres());
 
         var newSpark = repository.save(spark);
         cache.invalidateByNameAndSpectreNames(
@@ -92,6 +94,31 @@ public class SparkService {
                 .map(Spectre::getName)
                 .collect(Collectors.toSet()));
         return newSpark;
+    }
+
+    @Transactional
+    public List<Spark> createAll(Long spaceId, List<Spark> sparks) {
+        var space = spaceRepository.findById(spaceId)
+            .orElseThrow(EntityNotFoundException::new);
+
+        space.getSparks().addAll(sparks);
+        sparks.forEach(spark -> spark.setSpace(space));
+
+        var allSpectres = new HashSet<Spectre>();
+        sparks.forEach(spark -> allSpectres.addAll(spark.getSpectres()));
+        spectreRepository.saveAll(allSpectres);
+
+        var newSparks = repository.saveAll(sparks);
+        newSparks.forEach(
+            newSpark ->
+                cache.invalidateByNameAndSpectreNames(
+                    newSpark.getName(),
+                    newSpark.getSpectres()
+                        .stream()
+                        .map(Spectre::getName)
+                        .collect(Collectors.toSet()))
+        );
+        return newSparks;
     }
 
     @Transactional
@@ -126,7 +153,7 @@ public class SparkService {
             addedSpectres.forEach(spectre -> spectre.getSparksWithin().add(spark));
             removedSpectres.forEach(spectre -> spectre.getSparksWithin().remove(spark));
 
-            spark.getSpectres().forEach(spectreRepository::save);
+            spectreRepository.saveAll(spark.getSpectres());
         }
 
         var newSpark = repository.save(spark);

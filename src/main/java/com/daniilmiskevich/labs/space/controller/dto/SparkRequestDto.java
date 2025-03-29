@@ -16,13 +16,14 @@ import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
+import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "Request DTO for creating or updating a spark")
 public record SparkRequestDto(
     @Schema(
         description = "Name of the spark",
         example = "This is an example spark name.")
-    String name,
+    @NotBlank String name,
     @Schema(
         description = "Set of spectre names associated with the spark",
         example = "[\"foo\", \"bar\", \"foo-bar\"]",

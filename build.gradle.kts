@@ -46,8 +46,9 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    // testImplementation("org.springframework.boot:spring-boot-starter-test")
-    // testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.16.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
@@ -56,4 +57,8 @@ tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.test {
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }

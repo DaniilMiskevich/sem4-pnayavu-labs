@@ -23,6 +23,8 @@ public interface SparkRepository {
 
     Spark save(Spark spark);
 
+    <S extends Spark> List<S> saveAll(Iterable<S> entries);
+
     void deleteById(Long id);
 
 }

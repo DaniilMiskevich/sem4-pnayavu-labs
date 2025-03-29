@@ -1,5 +1,6 @@
 package com.daniilmiskevich.labs.space.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,8 @@ public interface SpectreRepository {
     boolean existsByName(String name);
 
     Spectre save(Spectre space);
+
+    <S extends Spectre> List<S> saveAll(Iterable<S> space);
 
     void deleteByName(String name);
 
