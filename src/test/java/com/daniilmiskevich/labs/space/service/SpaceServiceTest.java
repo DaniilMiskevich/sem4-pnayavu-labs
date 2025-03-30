@@ -122,7 +122,7 @@ class SpaceServiceTest {
     void updateNonExistingSpaceThrows() {
         // Arrange
         var id = 1L;
-        var partialSpace = new Space(id, "new-space");
+        var partialSpace = new Space(id, null);
         when(repository.findById(id)).thenReturn(Optional.empty());
 
         // Act and Assert

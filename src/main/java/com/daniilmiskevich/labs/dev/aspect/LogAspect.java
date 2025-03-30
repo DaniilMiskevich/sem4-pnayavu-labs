@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Aspect
 @Component
 public class LogAspect {
@@ -58,6 +60,23 @@ public class LogAspect {
             joinPoint.getTarget().getClass().getName(),
             joinPoint.getSignature().getName(),
             exception.getClass().getName());
+    }
+
+    @AfterReturning(pointcut = "execution(public * com.daniilmiskevich.labs.*.cache.*.put*(..))")
+    public void cachePut(JoinPoint joinPoint) {
+        LOGGER.info("Cache entry added: {}", joinPoint.getTarget().getClass().getName());
+    }
+
+    @AfterReturning(
+        pointcut = "execution(public * com.daniilmiskevich.labs.*.cache.*.get*(..))",
+        returning = "result")
+    public void cacheGot(JoinPoint joinPoint, Object result) {
+        if (result == null || (result instanceof List && ((List<?>) result).isEmpty())) {
+            LOGGER.info("Cache miss!");
+        } else {
+            LOGGER.info("Cache entry taken: {}", joinPoint.getTarget().getClass().getName());
+        }
+
     }
 
 }

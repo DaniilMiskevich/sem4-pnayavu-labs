@@ -21,13 +21,7 @@ public class SparkCache {
         this.cache = new LinkedHashMap<>(maxSize, 0.75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<CacheEntry, List<Spark>> eldest) {
-                var shouldInvalidate = size() > maxSize;
-
-                if (LOGGER.isInfoEnabled() && shouldInvalidate) {
-                    LOGGER.info("Invalidated: {}", eldest.getKey());
-                }
-
-                return shouldInvalidate;
+                return size() > maxSize;
             }
         };
     }
@@ -36,13 +30,7 @@ public class SparkCache {
         String namePattern,
         Set<String> spectreNames,
         List<Spark> value) {
-        var entry = new CacheEntry(namePattern, spectreNames);
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Put into cache: {}", entry);
-        }
-
-        cache.put(entry, value);
+        cache.put(new CacheEntry(namePattern, spectreNames), value);
     }
 
     public List<Spark> getByNamePatternAndSpectreNames(
@@ -50,30 +38,14 @@ public class SparkCache {
         Set<String> spectreNames) {
         var entry = new CacheEntry(namePattern, spectreNames);
 
-        var value = cache.get(entry);
-
-        if (LOGGER.isInfoEnabled()) {
-            if (value != null) {
-                LOGGER.info("Taken from cache: {}", entry);
-            } else {
-                LOGGER.info("Cache miss!");
-            }
-        }
-
-        return value;
+        return cache.get(entry);
     }
 
     public void invalidateByNameAndSpectreNames(String name, Set<String> spectreNames) {
         cache.keySet().removeIf(entry -> {
             var regexpNamePattern = String.format("*%s*", entry.namePattern).replace("*", ".*");
-            var shouldInvalidate = name.matches(regexpNamePattern)
+            return name.matches(regexpNamePattern)
                 || spectreNames.stream().anyMatch(entry.spectreNames::contains);
-
-            if (LOGGER.isInfoEnabled() && shouldInvalidate) {
-                LOGGER.info("Invalidated: {}", entry);
-            }
-
-            return shouldInvalidate;
         });
     }
 

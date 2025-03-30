@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,7 +24,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SparkServiceTest {
 
-    private final SparkCache cache = new SparkCache(0);
+    private final SparkCache cache = new SparkCache(1);
 
     @Mock
     private SparkRepository repository;
@@ -107,7 +109,7 @@ class SparkServiceTest {
         // Arrange
         var namePattern = "foo";
         var spectrePattern = "foo,bar";
-        var spectreNames = Set.of("foo", "bar");
+        var spectreNames = Arrays.stream(spectrePattern.split(",")).collect(Collectors.toSet());
         var jpqlNamePattern = "%foo%";
         var expectedSparks = List.of(new Spark(), new Spark());
         when(repository.match(jpqlNamePattern, spectreNames)).thenReturn(expectedSparks);
@@ -117,7 +119,26 @@ class SparkServiceTest {
 
         // Assert
         assertEquals(expectedSparks, actualSparks);
+        assertEquals(actualSparks, cache.getByNamePatternAndSpectreNames(namePattern, spectreNames));
         verify(repository, times(1)).match(jpqlNamePattern, spectreNames);
+    }
+
+    @Test
+    void matchForCachedPatternsReturnsCachedSpark() {
+        // Arrange
+        var namePattern = "*";
+        var spectrePattern = "foo,bar";
+        var spectreNames = Arrays.stream(spectrePattern.split(",")).collect(Collectors.toSet());
+        var jpqlNamePattern = "%%%";
+        var expectedSparks = List.of(new Spark(), new Spark());
+        cache.putByNamePatternAndSpectreNames(namePattern, spectreNames, expectedSparks);
+
+        // Act
+        var actualSparks = service.match(namePattern, spectrePattern);
+
+        // Assert
+        assertEquals(expectedSparks, actualSparks);
+        verifyNoInteractions(repository);
     }
 
     @Test
@@ -128,6 +149,7 @@ class SparkServiceTest {
         space.setSparks(new ArrayList<>());
 
         var spectres = Set.of(new Spectre("foo"), new Spectre("bar"));
+        var spectreNames = spectres.stream().map(Spectre::getName).collect(Collectors.toSet());
         var spark = new Spark(null, "spark", spectres);
 
         var savedSpark = new Spark(12L, spark.getName(), spark.getSpectres());
@@ -136,11 +158,16 @@ class SparkServiceTest {
         when(spectreRepository.saveAll(spectres)).thenReturn(List.copyOf(spectres));
         when(repository.save(spark)).thenReturn(savedSpark);
 
+        cache.putByNamePatternAndSpectreNames(spark.getName(), spectreNames, List.of());
+
         // Act
         var actualSpark = service.create(spaceId, spark);
 
         // Assert
         assertEquals(savedSpark, actualSpark);
+        assertEquals(space, spark.getSpace());
+        assertTrue(space.getSparks().contains(spark));
+        assertNull(cache.getByNamePatternAndSpectreNames(spark.getName(), spectreNames));
         verify(spaceRepository, times(1)).findById(spaceId);
         verify(spectreRepository, times(1)).saveAll(spectres);
         verify(repository, times(1)).save(spark);
@@ -208,12 +235,18 @@ class SparkServiceTest {
     void updateUpdatesSpark() {
         // Arrange
         var sparkId = 1L;
+
         var oldSpectres = new HashSet<Spectre>();
         var oldSpark = new Spark(sparkId, "old name", oldSpectres);
+        var oldSpectre = new Spectre("foo");
+        oldSpectres.add(oldSpectre);
+        oldSpectre.setSparksWithin(List.of(oldSpark));
 
         var newSpectres = new HashSet<Spectre>();
-        newSpectres.add(new Spectre("bar"));
         var partialSpark = new Spark(sparkId, "new name", newSpectres);
+        var newSpectre = new Spectre("bar");
+        newSpectres.add(oldSpectre);
+        newSpectre.setSparksWithin(List.of(oldSpark));
 
         var updatedSpark = new Spark(oldSpark.getId(), partialSpark.getName(), partialSpark.getSpectres());
 
@@ -226,6 +259,7 @@ class SparkServiceTest {
 
         // Assert
         assertEquals(updatedSpark, actualSpark);
+        assertNotEquals(oldSpectre, newSpectre);
         verify(repository, times(1)).findById(sparkId);
         verify(spectreRepository, times(1)).saveAll(newSpectres);
         verify(repository, times(1)).save(oldSpark);
