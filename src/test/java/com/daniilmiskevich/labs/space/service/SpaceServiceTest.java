@@ -1,20 +1,13 @@
 package com.daniilmiskevich.labs.space.service;
 
-import com.daniilmiskevich.labs.space.cache.SparkCache;
 import com.daniilmiskevich.labs.space.model.Space;
-import com.daniilmiskevich.labs.space.model.Spark;
-import com.daniilmiskevich.labs.space.model.Spectre;
 import com.daniilmiskevich.labs.space.repository.SpaceRepository;
-import com.daniilmiskevich.labs.space.repository.SparkRepository;
-import com.daniilmiskevich.labs.space.repository.SpectreRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.repository.query.EscapeCharacter;
 
 import java.util.*;
 
@@ -141,7 +134,6 @@ class SpaceServiceTest {
     void deleteByIdDeletes() {
         // Arrange
         var id = 1L;
-        var existingSpace = new Space(id, "to-delete");
         doNothing().when(repository).deleteById(id);
 
         // Act
