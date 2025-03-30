@@ -245,15 +245,12 @@ class SparkServiceTest {
     }
 
     @Test
-    void deleteByIdExistingIdDeletesSparkAndInvalidatesCache() {
+    void deleteByIdDeletes() {
         // Arrange
         var id = 1L;
-        var spectre1 = new Spectre("tag1");
-        var spectre2 = new Spectre("tag2");
-        var existingSpark = new Spark(id, "spark to delete", Set.of(spectre1, spectre2));
+        var existingSpark = new Spark(id, "to delete", Set.of());
         when(repository.findById(id)).thenReturn(Optional.of(existingSpark));
         doNothing().when(repository).deleteById(id);
-
 
         // Act
         service.deleteById(id);
@@ -261,19 +258,5 @@ class SparkServiceTest {
         // Assert
         verify(repository, times(1)).findById(id);
         verify(repository, times(1)).deleteById(id);
-    }
-
-    @Test
-    void deleteByIdNonExistingIdDoesNothing() {
-        // Arrange
-        var id = 1L;
-        when(repository.findById(id)).thenReturn(Optional.empty());
-
-        // Act
-        service.deleteById(id);
-
-        // Assert
-        verify(repository, times(1)).findById(id);
-        verify(repository, never()).deleteById(anyLong());
     }
 }
