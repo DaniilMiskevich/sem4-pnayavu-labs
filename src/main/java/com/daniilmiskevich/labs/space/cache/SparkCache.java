@@ -5,17 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.daniilmiskevich.labs.space.model.Spark;
 
 @Component
 public class SparkCache {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SparkCache.class);
     private final Map<CacheEntry, List<Spark>> cache;
-
 
     public SparkCache(@Value("${labs.cache.max-size}") int maxSize) {
         this.cache = new LinkedHashMap<>(maxSize, 0.75f, true) {

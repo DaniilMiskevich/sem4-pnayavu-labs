@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,7 +128,6 @@ class SparkServiceTest {
         var namePattern = "*";
         var spectrePattern = "foo,bar";
         var spectreNames = Arrays.stream(spectrePattern.split(",")).collect(Collectors.toSet());
-        var jpqlNamePattern = "%%%";
         var expectedSparks = List.of(new Spark(), new Spark());
         cache.putByNamePatternAndSpectreNames(namePattern, spectreNames, expectedSparks);
 

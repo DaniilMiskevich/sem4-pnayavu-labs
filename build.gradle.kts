@@ -76,7 +76,9 @@ tasks.jacocoTestReport {
             exclude(
                 "**/com/daniilmiskevich/*/dev/**",
                 "**/com/daniilmiskevich/*/docs/**",
-                "**/com/daniilmiskevich/*/exceptions/**"
+                "**/com/daniilmiskevich/*/exceptions/**",
+                "**/com/daniilmiskevich/*/*/controller/**",
+                "**/com/daniilmiskevich/*/*/repository/**"
             )
         }
     }))
