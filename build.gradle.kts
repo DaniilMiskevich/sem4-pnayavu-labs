@@ -5,6 +5,8 @@ plugins {
 
     checkstyle
     id("org.sonarqube") version "6.0.1.5171"
+
+    jacoco
 }
 
 group = "com.daniilmiskevich"
@@ -47,7 +49,6 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.16.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -55,10 +56,24 @@ tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
     systemProperty("spring.config.additional-location", "classpath:/credentials.properties")
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+
+    finalizedBy(tasks.jacocoTestReport)
+
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
-tasks.test {
-    jvmArgs("-XX:+EnableDynamicAgentLoading")
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    classDirectories.setFrom(files(classDirectories.files.map {
+        fileTree(it).apply {
+            exclude(
+                "**/com/daniilmiskevich/*/dev/**",
+                "**/com/daniilmiskevich/*/docs/**",
+                "**/com/daniilmiskevich/*/exceptions/**"
+            )
+        }
+    }))
 }
