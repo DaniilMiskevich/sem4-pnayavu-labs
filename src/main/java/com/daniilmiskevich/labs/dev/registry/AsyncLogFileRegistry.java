@@ -1,30 +1,41 @@
 package com.daniilmiskevich.labs.dev.registry;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.util.NoSuchElementException;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class AsyncLogFileRegistry {
 
     private final ConcurrentHashMap<Long, CompletableFuture<Path>> tasks;
-    private Long taskIdCounter = 0L;
+    private final AtomicLong taskIdCounter = new AtomicLong(0L);
 
     public AsyncLogFileRegistry() {
         tasks = new ConcurrentHashMap<>();
     }
 
-    public Long addAsyncLogFile(CompletableFuture<Path> future) {
-        tasks.put(taskIdCounter, future);
-        return taskIdCounter++;
+    public Long add(CompletableFuture<Path> future) {
+        var newId = taskIdCounter.getAndIncrement();
+        tasks.put(newId, future);
+        return newId;
     }
 
-    public Optional<Path> getAsyncLogFile(Long id) {
+    public Optional<AsyncLogFileStatus> getStatus(Long id) {
+        return Optional.ofNullable(tasks.get(id)).map(task -> switch (task.state()) {
+            case RUNNING -> AsyncLogFileStatus.RUNNING;
+            case SUCCESS -> AsyncLogFileStatus.COMPLETED;
+            default -> AsyncLogFileStatus.FAILED;
+        });
+    }
+
+    public Optional<Path> getResultPath(Long id) {
         try {
             return Optional.ofNullable(tasks.get(id)).map(CompletableFuture::resultNow);
         } catch (IllegalStateException e) {
@@ -32,20 +43,14 @@ public class AsyncLogFileRegistry {
         }
     }
 
-    public Optional<Throwable> getFailure(Long id) {
+    public Optional<RuntimeException> getFailure(Long id) {
         try {
-            return Optional.ofNullable(tasks.get(id)).map(CompletableFuture::exceptionNow);
+            return Optional.ofNullable(tasks.get(id))
+                .map(CompletableFuture::exceptionNow)
+                .map(e -> e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
         } catch (IllegalStateException e) {
             return Optional.empty();
         }
-    }
-
-    public Optional<AsyncLogFileStatus> getAsyncLogFileStatus(Long id) {
-        return Optional.ofNullable(tasks.get(id)).map(task -> switch (task.state()) {
-            case RUNNING -> AsyncLogFileStatus.RUNNING;
-            case SUCCESS -> AsyncLogFileStatus.COMPLETED;
-            default -> AsyncLogFileStatus.FAILED;
-        });
     }
 
     public enum AsyncLogFileStatus { RUNNING, COMPLETED, FAILED }

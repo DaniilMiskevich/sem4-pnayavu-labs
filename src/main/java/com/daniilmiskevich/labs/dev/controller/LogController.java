@@ -1,18 +1,17 @@
 package com.daniilmiskevich.labs.dev.controller;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import com.daniilmiskevich.labs.dev.registry.AsyncLogFileRegistry;
+import jdk.jfr.Frequency;
+import org.springframework.core.io.Resource;
 import io.swagger.v3.oas.annotations.Hidden;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.daniilmiskevich.labs.dev.service.LogService;
@@ -65,28 +64,54 @@ public class LogController {
     }
 
     @PostMapping(value = "/async")
-    public Long asyncLogFileCreate() {
-        return registry.addAsyncLogFile(service.asyncLogFile());
+    public Long asyncLogFileCreate(
+        @RequestParam(name = "start", required = false) String startString,
+        @RequestParam(name = "end", required = false) String endString) {
+        var start = LocalDateTime.MIN;
+        var end = LocalDateTime.MAX;
+        if (startString != null) {
+            try {
+                start = LocalDateTime.parse(startString, START_END_FORMATTER);
+            } catch (DateTimeParseException e) {
+                throw new ValidationException(e.getMessage());
+            }
+        }
+        if (endString != null) {
+            try {
+                end = LocalDateTime.parse(endString, START_END_FORMATTER);
+            } catch (DateTimeParseException e) {
+                throw new ValidationException(e.getMessage());
+            }
+        }
+
+        if (end.isBefore(start)) {
+            throw new InvalidRangeException(start, end);
+        }
+
+        return registry.add(service.asyncLogFile(start, end));
     }
 
     @GetMapping(value = "/async/{id}", produces = "text/plain")
-    public ResponseEntity<String> asyncLogFileGet(@PathVariable Long id) {
-        return ResponseEntity.ok(
-            registry.getAsyncLogFile(id)
-                .map(filePath -> {
-                    try {
-                        return String.join("\n", Files.readAllLines(filePath));
-                    } catch (IOException e) {
-                        return "\n";
-                    }
-                })
-                .or(() -> registry.getFailure(id).map(Throwable::toString))
-                .orElseThrow());
+    public ResponseEntity<Resource> asyncLogFileGet(@PathVariable Long id) {
+        var status = registry.getStatus(id).orElseThrow();
+
+        return switch (status) {
+            case RUNNING -> ResponseEntity.accepted().build();
+            case COMPLETED -> {
+                var result = registry.getResultPath(id).orElseThrow();
+                try {
+                    yield ResponseEntity.ok(new UrlResource(result.toUri()));
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case FAILED -> throw registry.getFailure(id).orElseThrow();
+        };
     }
 
     @GetMapping(value = "/async/{id}/status", produces = "text/plain")
     public String asyncLogFileStatus(@PathVariable Long id) {
-        var status = registry.getAsyncLogFileStatus(id).orElseThrow();
+        var status = registry.getStatus(id).orElseThrow();
 
         return switch (status) {
             case RUNNING -> "running";

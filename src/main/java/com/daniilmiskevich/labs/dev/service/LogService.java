@@ -1,15 +1,18 @@
 package com.daniilmiskevich.labs.dev.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -60,21 +63,49 @@ public class LogService {
     }
 
     @Async
-    public CompletableFuture<Path> asyncLogFile() {
+    public CompletableFuture<Path> asyncLogFile(LocalDateTime start, LocalDateTime end) {
+        var log = new File(logPath, logName);
+        if (!log.exists()) {
+            return CompletableFuture.failedFuture(new FileNotFoundException());
+        }
+
         try {
-            var file = new File("foo.txt");
-            var writer = new FileWriter(file);
+            var filteredLog = Files.createTempFile(
+                logName,
+                String.format("%s_to_%s",
+                    start != null ? start.format(DateTimeFormatter.ISO_DATE) : "any",
+                    end != null ? end.format(DateTimeFormatter.ISO_DATE) : "any")).toFile();
+            // filteredLog.deleteOnExit();
 
-            writer.write("operation started!\n\n");
-
-            TimeUnit.SECONDS.sleep(6);
-
-            writer.write("operation ended!\n");
-
+            var writer = new FileWriter(filteredLog);
+            Files.readAllLines(log.toPath())
+                .stream()
+                .filter(line -> {
+                    try {
+                        var timestampString = line.split(" ", 2)[0];
+                        var timestamp =
+                            LocalDateTime.parse(timestampString, DateTimeFormatter.ISO_DATE_TIME);
+                        return timestamp.isAfter(start) && timestamp.isBefore(end);
+                    } catch (DateTimeParseException | IndexOutOfBoundsException e) {
+                        return false;
+                    }
+                })
+                .forEach(line -> {
+                    try {
+                        writer.write(line);
+                        writer.write("\n");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            Thread.sleep(5 * 1000);
             writer.close();
-            return CompletableFuture.completedFuture(file.toPath());
-        } catch (Exception e) {
-            throw new RuntimeException(e.toString());
+            return CompletableFuture.completedFuture(filteredLog.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 
