@@ -1,6 +1,8 @@
 package com.daniilmiskevich.labs.exceptions.handler;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,15 +37,17 @@ public class GlobalExceptionHandler {
             .body(new ApiError(e));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
+    @ExceptionHandler({
+        EntityNotFoundException.class,
+        NoSuchElementException.class,
+    })
+    public ResponseEntity<ApiError> handleEntityNotFoundException(Exception e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ApiError(e));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiError> handleDataIntegrityViolationException(
-        DataIntegrityViolationException e) {
+    public ResponseEntity<ApiError> handleDataIntegrityViolationException(Exception e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(new ApiError(e));
     }
@@ -51,7 +55,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(new ApiError(e.toString(), List.of(), List.of()));
+            .body(new ApiError(
+                e.toString(),
+                List.of(),
+                Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()));
     }
 
 }

@@ -1,14 +1,20 @@
 package com.daniilmiskevich.labs.dev.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
+import com.daniilmiskevich.labs.dev.registry.AsyncLogFileRegistry;
 import io.swagger.v3.oas.annotations.Hidden;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import com.daniilmiskevich.labs.dev.service.LogService;
 import com.daniilmiskevich.labs.exceptions.exception.InvalidRangeException;
 import jakarta.validation.ValidationException;
@@ -23,9 +29,11 @@ public class LogController {
 
 
     private final LogService service;
+    private final AsyncLogFileRegistry registry;
 
-    public LogController(LogService service) {
+    public LogController(LogService service, AsyncLogFileRegistry registry) {
         this.service = service;
+        this.registry = registry;
     }
 
     @GetMapping(value = "", produces = "text/plain")
@@ -54,6 +62,37 @@ public class LogController {
         }
 
         return String.join("\n", service.filtered(start, end));
+    }
+
+    @PostMapping(value = "/async")
+    public Long asyncLogFileCreate() {
+        return registry.addAsyncLogFile(service.asyncLogFile());
+    }
+
+    @GetMapping(value = "/async/{id}", produces = "text/plain")
+    public ResponseEntity<String> asyncLogFileGet(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            registry.getAsyncLogFile(id)
+                .map(filePath -> {
+                    try {
+                        return String.join("\n", Files.readAllLines(filePath));
+                    } catch (IOException e) {
+                        return "\n";
+                    }
+                })
+                .or(() -> registry.getFailure(id).map(Throwable::toString))
+                .orElseThrow());
+    }
+
+    @GetMapping(value = "/async/{id}/status", produces = "text/plain")
+    public String asyncLogFileStatus(@PathVariable Long id) {
+        var status = registry.getAsyncLogFileStatus(id).orElseThrow();
+
+        return switch (status) {
+            case RUNNING -> "running";
+            case COMPLETED -> "completed";
+            case FAILED -> "failed";
+        };
     }
 
 }
