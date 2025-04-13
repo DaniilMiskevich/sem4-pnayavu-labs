@@ -19,27 +19,30 @@ public class LogAspect {
 
     @Before("execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))")
     public void controllerMethodAccessed(JoinPoint joinPoint) {
-        LOGGER.info("Controller method accessed: {}.{}",
-            joinPoint.getTarget().getClass().getName(),
-            joinPoint.getSignature().getName());
+        var signature = joinPoint.getSignature();
+        LOGGER.info("Controller method accessed: {}::{}",
+            signature.getDeclaringTypeName(),
+            signature.getName());
     }
 
     @AfterReturning(
         pointcut = "execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))",
         returning = "result")
     public void controllerMethodReturned(JoinPoint joinPoint, Object result) {
-        LOGGER.trace("Controller method returned: {}.{}",
-            joinPoint.getTarget().getClass().getName(),
-            joinPoint.getSignature().getName());
+        var signature = joinPoint.getSignature();
+        LOGGER.trace("Controller method returned: {}::{}",
+            signature.getDeclaringTypeName(),
+            signature.getName());
     }
 
     @AfterThrowing(
         pointcut = "execution(public * com.daniilmiskevich.labs.*.controller.*.*(..))",
         throwing = "exception")
     public void controllerMethodThrew(JoinPoint joinPoint, Exception exception) {
-        LOGGER.warn("Controller method threw: {}.{} -> {}",
-            joinPoint.getTarget().getClass().getName(),
-            joinPoint.getSignature().getName(),
+        var signature = joinPoint.getSignature();
+        LOGGER.warn("Controller method threw: {}::{} -> {}",
+            signature.getDeclaringTypeName(),
+            signature.getName(),
             exception.getClass().getName());
     }
 
@@ -47,24 +50,26 @@ public class LogAspect {
         pointcut = "execution(public * com.daniilmiskevich.labs.*.repository.*.*(..))",
         returning = "result")
     public void repositoryMethodReturned(JoinPoint joinPoint, Object result) {
-        LOGGER.trace("Repository method returned: {}.{}",
-            joinPoint.getTarget().getClass().getName(),
-            joinPoint.getSignature().getName());
+        var signature = joinPoint.getSignature();
+        LOGGER.trace("Repository method returned: {}::{}",
+            signature.getDeclaringTypeName(),
+            signature.getName());
     }
 
     @AfterThrowing(
         pointcut = "execution(public * com.daniilmiskevich.labs.*.repository.*.*(..))",
         throwing = "exception")
     public void repositoryMethodThrew(JoinPoint joinPoint, Exception exception) {
-        LOGGER.warn("Repository method threw: {}.{} -> {}",
-            joinPoint.getTarget().getClass().getName(),
-            joinPoint.getSignature().getName(),
+        var signature = joinPoint.getSignature();
+        LOGGER.warn("Repository method threw: {}::{} -> {}",
+            signature.getDeclaringTypeName(),
+            signature.getName(),
             exception.getClass().getName());
     }
 
     @AfterReturning(pointcut = "execution(public * com.daniilmiskevich.labs.*.cache.*.put*(..))")
     public void cachePut(JoinPoint joinPoint) {
-        LOGGER.info("Cache entry added: {}", joinPoint.getTarget().getClass().getName());
+        LOGGER.info("Cache entry added: {}", joinPoint.getSignature().getDeclaringTypeName());
     }
 
     @AfterReturning(
@@ -72,9 +77,9 @@ public class LogAspect {
         returning = "result")
     public void cacheGot(JoinPoint joinPoint, Object result) {
         if (result == null || (result instanceof List && ((List<?>) result).isEmpty())) {
-            LOGGER.info("Cache miss!");
+            LOGGER.info("Cache miss! {}", joinPoint.getSignature().getDeclaringTypeName());
         } else {
-            LOGGER.info("Cache entry taken: {}", joinPoint.getTarget().getClass().getName());
+            LOGGER.info("Cache entry taken: {}", joinPoint.getSignature().getDeclaringTypeName());
         }
 
     }
