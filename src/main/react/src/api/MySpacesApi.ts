@@ -12,7 +12,10 @@ class MySpacesApi implements SpacesApi {
         return my_fetch<Space>(`${this.base_uri}/${idOrName}`)
     }
     async search(name?: string): Promise<Space[]> {
-        return my_fetch<Space[]>(`${this.base_uri}?name=${name}`)
+        const params = new URLSearchParams({
+            ...name && { "name": name },
+        });
+        return my_fetch<Space[]>(`${this.base_uri}?${params}`)
     }
     async update(id: number, space: SpaceRquestDto): Promise<Space> {
         return my_fetch<Space>(`${this.base_uri}/${id}`, { method: "PATCH", body: JSON.stringify(space) })
