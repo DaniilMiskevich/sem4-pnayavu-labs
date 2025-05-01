@@ -1,20 +1,17 @@
-import { Box, Chip } from "@mui/material"
+import { Chip, Grid } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 
 const SpectresView = ({ names }: { names?: string[] }) => {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-    return <Box>
-        {names
-            ? names.map(name =>
-                <Chip sx={{ mx: "2px" }} key={name} label={name}
-                    onClick={e => {
-                        e.stopPropagation()
-                        navigate(`/spectres/${name}`)
-                    }} />)
-            : [0, 1, 2].map(i =>
-                <Chip sx={{ mx: "2px", color: "transparent" }} key={i} label="text" />)}
-    </Box>
+  return <Grid container spacing="0.3rem">
+    {names
+      ? names.map(name =>
+        <Chip key={name} label={name}
+          onClick={() => navigate(`/spectres/${name}`)} />)
+      : [0, 1, 2].map(i =>
+        <Chip sx={{ color: "transparent" }} key={i} label="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />)}
+  </Grid>
 }
 
 
