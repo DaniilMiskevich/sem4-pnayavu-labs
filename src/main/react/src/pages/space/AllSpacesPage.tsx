@@ -1,12 +1,12 @@
 import { useDI } from "../../DI"
 import { Suspense, use, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Alert, Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Grid } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import SpacesApi, { SpaceRquestDto } from "../../api/SpacesApi";
 import Space from "../../models/Space";
-import SpaceView from "../../components/space/SpaceView";
 import AddSpaceDialog from "./AddSpaceDialog";
+import SpaceTable from "../../components/space/SpaceTable";
 
 const AsyncAllSpaces = ({ spaces_promise }: { spaces_promise: Promise<Space[]> }) => {
   const spaces_api = useDI()["spaces_api"] as SpacesApi;
@@ -16,25 +16,17 @@ const AsyncAllSpaces = ({ spaces_promise }: { spaces_promise: Promise<Space[]> }
   const create_space = (val: SpaceRquestDto) => spaces_api.create(val)
     .then(new_space => set_spaces(spaces => spaces.concat(new_space)))
     .then(() => set_is_dialog_open(false))
-    .catch(() => { })
 
   const delete_space = (id: number) => spaces_api.delete(id)
     .then(() => set_spaces(spaces => spaces.filter(el => el.id != id)))
-    .catch(() => { })
 
-  return <Grid container direction="column-reverse" spacing="0.6rem">
-
-    {spaces.length <= 0
-      ? <Typography color="textDisabled" textAlign="center"> There are no spaces created yet. </Typography>
-      : spaces.map(space =>
-        <SpaceView key={space.id} space={space}
-          on_edit={alert}
-          on_delete={() => delete_space(space.id)} />)}
-
-    <Button variant="contained" sx={{ borderRadius: "1.2rem", alignSelf: "center" }} startIcon={<Add />}
+  return <Grid container direction="column" spacing="0.6rem" alignItems="center">
+    <Button variant="contained" startIcon={<Add />}
       onClick={() => set_is_dialog_open(true)}> Create </Button>
-    <AddSpaceDialog is_open={is_dialog_open} on_submit={create_space} on_cancel={() => set_is_dialog_open(false)} />
+    <AddSpaceDialog is_open={is_dialog_open} on_submit={create_space}
+      on_cancel={() => set_is_dialog_open(false)} />
 
+    <SpaceTable spaces={spaces} on_edit={alert} on_delete={delete_space} />
   </Grid>
 }
 

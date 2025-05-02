@@ -3,25 +3,26 @@ import SparkEdit from "../../components/spark/SparkEdit"
 import { useState } from "react"
 import { SparkRquestDto } from "../../api/SparksApi"
 import { Close, Done } from "@mui/icons-material"
+import Spark from "../../models/Spark"
 
-const AddSparkDialog = ({ is_open, on_submit, on_cancel }: {
+const SparkDialog = ({ is_open, on_submit, on_cancel, edited }: {
   is_open: boolean,
-  on_submit: (value: SparkRquestDto) => void,
-  on_cancel: () => void
+  on_submit: (value: SparkRquestDto, space_id?: number) => Promise<void>,
+  on_cancel: () => void,
+  edited?: Spark
 }) => {
-  const [name, set_name] = useState("")
-  const [spectre_names, set_spectre_names] = useState([] as string[])
+  const [name, set_name] = useState(edited?.name ?? "")
+  const [spectre_names, set_spectre_names] = useState(edited?.spectre_names ?? [] as string[])
+  const [space_id, set_space_id] = useState(edited?.space_id ?? 32 as number | undefined)
 
   return <Dialog disableRestoreFocus open={is_open} onClose={on_cancel} onSubmit={e => {
     e.preventDefault();
 
-    on_submit({ name, spectre_names })
-
-    set_name("")
-    set_spectre_names([])
+    on_submit({ name, spectre_names }, space_id)
+      .then(() => { set_name(""); set_spectre_names([]); })
   }}
-    slotProps={{ paper: { component: "form", sx: { borderRadius: "1.2rem" } } }}>
-    <DialogTitle> Create Spark </DialogTitle>
+    slotProps={{ paper: { component: "form" } }}>
+    <DialogTitle> {edited ? "Edit Spark" : "Create Spark"} </DialogTitle>
 
     <DialogContent>
       <SparkEdit name={name} on_change_name={set_name}
@@ -38,4 +39,4 @@ const AddSparkDialog = ({ is_open, on_submit, on_cancel }: {
   </Dialog>
 }
 
-export default AddSparkDialog
+export default SparkDialog

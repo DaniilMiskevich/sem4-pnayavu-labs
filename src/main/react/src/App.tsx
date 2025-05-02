@@ -37,7 +37,7 @@ const App = () => <DIProvider deps={{
 }}>
   <ThemeProvider theme={theme}>
     <MyAppBar onClick={() => router.navigate("/")} />
-    <Box maxWidth="640px" justifySelf="center" justifyContent="center" alignItems="center" width="stretch">
+    <Box maxWidth="md" justifySelf="center" justifyContent="center" alignItems="center" width="stretch">
       <RouterProvider router={router} />
     </Box>
   </ThemeProvider>

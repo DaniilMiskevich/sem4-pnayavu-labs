@@ -1,12 +1,11 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material"
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { useState } from "react"
-import { Close, Done } from "@mui/icons-material"
 import SpaceEdit from "../../components/space/SpaceEdit"
 import { SpaceRquestDto } from "../../api/SpacesApi"
 
 const AddSpaceDialog = ({ is_open, on_submit, on_cancel }: {
   is_open: boolean,
-  on_submit: (value: SpaceRquestDto) => void,
+  on_submit: (value: SpaceRquestDto) => Promise<void>,
   on_cancel: () => void
 }) => {
   const [name, set_name] = useState("")
@@ -15,17 +14,16 @@ const AddSpaceDialog = ({ is_open, on_submit, on_cancel }: {
     e.preventDefault();
 
     on_submit({ name })
-
-    set_name("")
+      .then(() => set_name(""))
   }}
-    slotProps={{ paper: { component: "form", sx: { borderRadius: "1.2rem" } } }}>
+    slotProps={{ paper: { component: "form" } }}>
     <DialogTitle> Create Space </DialogTitle>
 
-    <DialogContent> <SpaceEdit name={name} on_change_name={set_name} /> </DialogContent>
+    <DialogContent> <SpaceEdit name={name} on_name_change={set_name} /> </DialogContent>
 
     <DialogActions>
-      <IconButton type="submit"> <Done /> </IconButton>
-      <IconButton onClick={on_cancel}> <Close /> </IconButton>
+      <Button type="submit"> Ok </Button>
+      <Button onClick={on_cancel}> Cancel </Button>
     </DialogActions>
 
   </Dialog>

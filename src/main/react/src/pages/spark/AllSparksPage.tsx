@@ -1,40 +1,35 @@
 import { useDI } from "../../DI"
 import SparksApi, { SparkRquestDto } from "../../api/SparksApi";
 import { Suspense, use, useState } from "react";
-import SparkView from "../../components/spark/SparkView";
+import SparkTable from "../../components/spark/SparkTable";
 import { ErrorBoundary } from "react-error-boundary";
-import { Alert, Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Grid } from "@mui/material";
 import Spark from "../../models/Spark";
 import { Add } from "@mui/icons-material";
-import AddSparkDialog from "./AddSparkDialog";
+import SparkDialog from "./SparkDialog";
 
 const AsyncAllSparks = ({ sparks_promise }: { sparks_promise: Promise<Spark[]> }) => {
   const sparks_api = useDI()["sparks_api"] as SparksApi;
   const [sparks, set_sparks] = useState(use(sparks_promise))
-  const [is_dialog_open, set_is_dialog_open] = useState(false)
+  const [dialog_state, set_dialog_state] = useState({ is_open: false, edited: undefined as Spark | undefined })
 
-  const create_spark = (val: SparkRquestDto) => sparks_api.create(2, val)
+  const create_spark = (val: SparkRquestDto, space_id?: number) => sparks_api.create(space_id ?? 0, val)
     .then(new_spark => set_sparks(sparks => sparks.concat(new_spark)))
-    .then(() => set_is_dialog_open(false))
-    .catch(() => { })
+    .then(() => set_dialog_state({ is_open: false, edited: undefined }))
 
   const delete_spark = (id: number) => sparks_api.delete(id)
     .then(() => set_sparks(sparks => sparks.filter(el => el.id != id)))
-    .catch(() => { })
 
-  return <Grid container direction="column-reverse" spacing="0.6rem">
+  return <Grid container direction="column" spacing="0.6rem" alignItems="center">
+    <Button variant="contained" startIcon={<Add />}
+      onClick={() => set_dialog_state({ is_open: true, edited: undefined })}> Create </Button>
+    <SparkDialog is_open={dialog_state.is_open} edited={dialog_state.edited}
+      on_submit={create_spark}
+      on_cancel={() => set_dialog_state({ is_open: false, edited: undefined })} />
 
-    {sparks.length <= 0
-      ? <Typography color="textDisabled" textAlign="center"> There are no sparks published yet. </Typography>
-      : sparks.map(spark =>
-        <SparkView key={spark.id} spark={spark}
-          on_edit={alert}
-          on_delete={() => delete_spark(spark.id)} />)}
-
-    <Button variant="contained" sx={{ borderRadius: "1.2rem", alignSelf: "center" }} startIcon={<Add />}
-      onClick={() => set_is_dialog_open(true)}> Create </Button>
-    <AddSparkDialog is_open={is_dialog_open} on_submit={create_spark} on_cancel={() => set_is_dialog_open(false)} />
-
+    <SparkTable sparks={sparks}
+      on_edit={id => set_dialog_state({ is_open: true, edited: sparks.find(el => el.id == id) })}
+      on_delete={delete_spark} />
   </Grid>
 }
 
