@@ -1,16 +1,16 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import SpacePage from './pages/SpacePage';
+import SpacePage from './pages/space/SpacePage';
 import SpectrePage from './pages/SpectrePage';
 import SpacesApi from './api/SpacesApi';
 import MySpacesApi from './api/MySpacesApi';
 import { DIProvider } from './DI';
 import SparksApi from './api/SparksApi';
 import MySparksApi from './api/MySparksApi';
-import AllSparksPage from './pages/AllSparksPage';
+import AllSparksPage from './pages/spark/AllSparksPage';
 import { ThemeProvider } from '@emotion/react';
 import { Box, createTheme, } from '@mui/material';
 import MyAppBar from './components/MyAppBar';
-import AllSpacesPage from './pages/AllSpacesPage';
+import AllSpacesPage from './pages/space/AllSpacesPage';
 
 const spaces_api: SpacesApi = new MySpacesApi("http://localhost:8080/api/spaces")
 const sparks_api: SparksApi = new MySparksApi("http://localhost:8080/api/sparks")

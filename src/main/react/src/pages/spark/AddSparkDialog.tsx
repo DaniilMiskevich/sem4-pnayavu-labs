@@ -1,7 +1,7 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material"
-import SparkEdit from "../components/spark/SparkEdit"
+import SparkEdit from "../../components/spark/SparkEdit"
 import { useState } from "react"
-import { SparkRquestDto } from "../api/SparksApi"
+import { SparkRquestDto } from "../../api/SparksApi"
 import { Close, Done } from "@mui/icons-material"
 
 const AddSparkDialog = ({ is_open, on_submit, on_cancel }: {

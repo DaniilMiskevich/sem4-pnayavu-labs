@@ -1,10 +1,10 @@
-import { useDI } from "../DI"
-import SparksApi, { SparkRquestDto } from "../api/SparksApi";
+import { useDI } from "../../DI"
+import SparksApi, { SparkRquestDto } from "../../api/SparksApi";
 import { Suspense, use, useState } from "react";
-import SparkView from "../components/spark/SparkView";
+import SparkView from "../../components/spark/SparkView";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
-import Spark from "../models/Spark";
+import Spark from "../../models/Spark";
 import { Add } from "@mui/icons-material";
 import AddSparkDialog from "./AddSparkDialog";
 
