@@ -16,12 +16,15 @@ const SpaceDialog = ({ is_open, on_submit, on_cancel, edited }: {
     e.preventDefault();
 
     on_submit({ name })
-      .then(() => set_name(""))
+      .then(() => { if (!edited) set_name("") })
+
   }}
     slotProps={{ paper: { component: "form" } }}>
     <DialogTitle> {edited ? "Edit Space" : "Create Space"} </DialogTitle>
 
-    <DialogContent> <SpaceEdit name={name} on_name_change={set_name} /> </DialogContent>
+    <DialogContent sx={{ overflow: "unset" }} >
+      <SpaceEdit name={name} on_name_change={set_name} />
+    </DialogContent>
 
     <DialogActions>
       <Button type="submit"> Ok </Button>

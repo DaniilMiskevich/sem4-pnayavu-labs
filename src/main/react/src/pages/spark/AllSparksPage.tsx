@@ -28,11 +28,10 @@ const AsyncAllSparks = ({ sparks_promise }: { sparks_promise: Promise<Spark[]> }
   const delete_spark = (id: number) => sparks_api.delete(id)
     .then(() => set_sparks(sparks => sparks.filter(el => el.id != id)))
 
-  return <Grid container direction="column" spacing="0.6rem" alignItems="center">
-    <Button variant="contained" startIcon={<Add />} onClick={dialog_create}> Create </Button>
-    <SparkDialog key={dialog_state.edited?.id} is_open={dialog_state.is_open} edited={dialog_state.edited}
+  return <Grid container direction="column" alignItems="center">
+    <SparkDialog key={dialog_state.edited?.id} {...dialog_state}
       on_submit={dialog_state.edited ? update_spark : create_spark} on_cancel={dialog_close} />
-
+    <Button variant="contained" startIcon={<Add />} onClick={dialog_create}> Create </Button>
     <SparkTable sparks={sparks}
       on_edit={id => dialog_edit(sparks.find(el => el.id == id))} on_delete={delete_spark} />
   </Grid>

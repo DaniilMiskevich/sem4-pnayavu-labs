@@ -1,14 +1,19 @@
 class Spark {
-    constructor({ id, name, space_id, spectre_names }: { id: number, name: string, space_id: number, spectre_names: string[] }) {
+    constructor({ id, name, space, spectre_names }: {
+        id: number,
+        name: string,
+        space: { id: number, name: string },
+        spectre_names: string[]
+    }) {
         this.id = id
         this.name = name
-        this.space_id = space_id
+        this.space = space
         this.spectre_names = spectre_names
     }
 
     id: number
     name: string
-    space_id: number
+    space: { id: number, name: string }
     spectre_names: string[]
 }
 

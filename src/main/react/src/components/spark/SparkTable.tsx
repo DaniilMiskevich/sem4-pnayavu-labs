@@ -11,6 +11,7 @@ const SparkTable = ({ sparks, on_edit, on_delete }: {
     <TableRow>
       <TableCell> Name </TableCell>
       <TableCell> Spectres </TableCell>
+      <TableCell> Space </TableCell>
       <TableCell>
         <IconButton disabled> <Icon /> </IconButton>
         <IconButton disabled> <Icon /> </IconButton>
@@ -23,6 +24,7 @@ const SparkTable = ({ sparks, on_edit, on_delete }: {
       <TableRow key={spark.id}>
         <TableCell> {spark.name} </TableCell>
         <TableCell> {spark.spectre_names.join(", ")} </TableCell>
+        <TableCell> {spark.space.name} </TableCell>
         <TableCell align="right">
           <IconButton onClick={() => on_edit(spark.id)}> <Edit /> </IconButton>
           <IconButton onClick={() => on_delete(spark.id)}> <Delete /> </IconButton>

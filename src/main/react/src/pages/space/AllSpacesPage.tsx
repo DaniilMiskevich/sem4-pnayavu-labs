@@ -28,9 +28,9 @@ const AsyncAllSpaces = ({ spaces_promise }: { spaces_promise: Promise<Space[]> }
   const delete_space = (id: number) => spaces_api.delete(id)
     .then(() => set_spaces(spaces => spaces.filter(el => el.id != id)))
 
-  return <Grid container direction="column" spacing="0.6rem" alignItems="center">
+  return <Grid container direction="column" alignItems="center">
     <Button variant="contained" startIcon={<Add />} onClick={dialog_create}> Create </Button>
-    <SpaceDialog key={dialog_state.edited?.id} is_open={dialog_state.is_open} edited={dialog_state.edited}
+    <SpaceDialog key={dialog_state.edited?.id} {...dialog_state}
       on_submit={dialog_state.edited ? update_space : create_space} on_cancel={dialog_close} />
 
     <SpaceTable spaces={spaces}
