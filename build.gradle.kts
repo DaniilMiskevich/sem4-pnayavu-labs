@@ -53,7 +53,7 @@ dependencies {
 }
 
 tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
-    systemProperty("spring.config.additional-location", "classpath:/credentials.properties")
+    systemProperty("spring.config.additional-location", "classpath:/db_local.properties")
 }
 
 tasks.test {
