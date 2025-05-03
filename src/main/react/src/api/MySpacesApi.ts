@@ -8,7 +8,7 @@ class MySpacesApi implements SpacesApi {
     async create(space: SpaceRquestDto): Promise<Space> {
         return my_post(this.base_uri, space)
     }
-    async get(idOrName: number | string): Promise<Space> {
+    async get(idOrName: string): Promise<Space> {
         return my_get(`${this.base_uri}/${idOrName}`)
     }
     async search(name?: string): Promise<Space[]> {

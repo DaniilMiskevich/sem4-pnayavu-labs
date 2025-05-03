@@ -5,6 +5,7 @@ import { SparkRquestDto } from "../../api/SparksApi"
 import Spark from "../../models/Spark"
 import { useDI } from "../../DI"
 import SpacesApi from "../../api/SpacesApi"
+import { useParams } from "react-router-dom"
 
 const SpaceSelect = ({ space_id, on_space_id_change }: {
   space_id: number | undefined,
@@ -49,9 +50,11 @@ const SparkDialog = ({ is_open, on_submit, on_cancel, edited }: {
   on_cancel: () => void,
   edited?: Spark
 }) => {
+  const space_id_param = useParams()["space_id"]
+
   const [name, set_name] = useState(edited?.name ?? "")
   const [spectre_names, set_spectre_names] = useState(edited?.spectre_names ?? [] as string[])
-  const [space_id, set_space_id] = useState(edited?.space.id)
+  const [space_id, set_space_id] = useState(edited?.space.id ?? (space_id_param ? +space_id_param : undefined))
 
   return <Dialog disableRestoreFocus open={is_open} onClose={on_cancel} onSubmit={e => {
     e.preventDefault();
@@ -73,7 +76,7 @@ const SparkDialog = ({ is_open, on_submit, on_cancel, edited }: {
         spectre_names={spectre_names}
         on_add_spectre={name => set_spectre_names(spectre_names => spectre_names.concat(name))}
         on_remove_spectre={name => set_spectre_names(spectre_names => spectre_names.filter(el => el != name))} />
-      {!edited && <SpaceSelect space_id={space_id} on_space_id_change={set_space_id} />}
+      {!space_id_param && !edited && <SpaceSelect space_id={space_id} on_space_id_change={set_space_id} />}
     </Grid> </DialogContent>
 
     <DialogActions>

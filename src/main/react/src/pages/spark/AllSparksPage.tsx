@@ -7,8 +7,12 @@ import { Alert, Box, Button, CircularProgress, Grid } from "@mui/material";
 import Spark from "../../models/Spark";
 import { Add } from "@mui/icons-material";
 import SparkDialog from "./SparkDialog";
+import SpacesApi from "../../api/SpacesApi";
+import { useParams } from "react-router-dom";
 
 const AsyncAllSparks = ({ sparks_promise }: { sparks_promise: Promise<Spark[]> }) => {
+  const spectre_name = useParams()["spectre_name"]
+
   const sparks_api = useDI()["sparks_api"] as SparksApi;
   const [sparks, set_sparks] = useState(use(sparks_promise))
 
@@ -31,18 +35,25 @@ const AsyncAllSparks = ({ sparks_promise }: { sparks_promise: Promise<Spark[]> }
   return <Grid container direction="column" alignItems="center">
     <SparkDialog key={dialog_state.edited?.id} {...dialog_state}
       on_submit={dialog_state.edited ? update_spark : create_spark} on_cancel={dialog_close} />
-    <Button variant="contained" startIcon={<Add />} onClick={dialog_create}> Create </Button>
+    {!spectre_name && <Button variant="contained" startIcon={<Add />} onClick={dialog_create}> Create </Button>}
     <SparkTable sparks={sparks}
       on_edit={id => dialog_edit(sparks.find(el => el.id == id))} on_delete={delete_spark} />
   </Grid>
 }
 
 const AllSparksPage = () => {
+  const space_id = useParams()["space_id"]
+  const spectre_name = useParams()["spectre_name"]
+
   const sparks_api = useDI()["sparks_api"] as SparksApi;
-  const sparks_promise = sparks_api.search()
+  const spaces_api = useDI()["spaces_api"] as SpacesApi;
+
+  const sparks_promise = space_id
+    ? spaces_api.get(space_id).then(space => space.sparks)
+    : sparks_api.search(undefined, spectre_name)
 
   return <>
-    <Suspense fallback={
+    <Suspense key={spectre_name} fallback={
       <Box display="flex" justifyContent="center"> <CircularProgress /> </Box>
     }>
       <ErrorBoundary fallbackRender={({ error }) =>

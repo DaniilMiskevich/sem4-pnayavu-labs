@@ -1,6 +1,7 @@
 import Spark from "../../models/Spark"
 import { Icon, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import { Delete, Edit } from "@mui/icons-material"
+import { Link } from "react-router-dom"
 
 const SparkTable = ({ sparks, on_edit, on_delete }: {
   sparks: Spark[],
@@ -23,7 +24,11 @@ const SparkTable = ({ sparks, on_edit, on_delete }: {
     {sparks.sort((a, b) => a.id - b.id).map(spark =>
       <TableRow key={spark.id}>
         <TableCell> {spark.name} </TableCell>
-        <TableCell> {spark.spectre_names.join(", ")} </TableCell>
+        <TableCell>
+          {spark.spectre_names.map((name, i) => <>
+            {i ? ", " : ""}<Link to={`/spectres/${name}`}>{name}</Link>
+          </>)}
+        </TableCell >
         <TableCell> {spark.space.name} </TableCell>
         <TableCell align="right">
           <IconButton onClick={() => on_edit(spark.id)}> <Edit /> </IconButton>
