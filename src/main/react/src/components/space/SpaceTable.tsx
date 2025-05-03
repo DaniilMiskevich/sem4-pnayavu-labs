@@ -19,7 +19,7 @@ const SpaceTable = ({ spaces, on_edit, on_delete }: {
   </TableHead>
 
   <TableBody>
-    {spaces.map(space =>
+    {spaces.sort((a, b) => a.id - b.id).map(space =>
       <TableRow key={space.id}>
         <TableCell> {space.name} </TableCell>
         <TableCell align="right"> {space.sparks.length} </TableCell>

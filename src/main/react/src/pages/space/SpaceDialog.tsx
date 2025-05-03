@@ -2,13 +2,15 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import { useState } from "react"
 import SpaceEdit from "../../components/space/SpaceEdit"
 import { SpaceRquestDto } from "../../api/SpacesApi"
+import Space from "../../models/Space"
 
-const AddSpaceDialog = ({ is_open, on_submit, on_cancel }: {
+const SpaceDialog = ({ is_open, on_submit, on_cancel, edited }: {
   is_open: boolean,
   on_submit: (value: SpaceRquestDto) => Promise<void>,
   on_cancel: () => void
+  edited?: Space
 }) => {
-  const [name, set_name] = useState("")
+  const [name, set_name] = useState(edited?.name ?? "")
 
   return <Dialog disableRestoreFocus open={is_open} onClose={on_cancel} onSubmit={e => {
     e.preventDefault();
@@ -17,7 +19,7 @@ const AddSpaceDialog = ({ is_open, on_submit, on_cancel }: {
       .then(() => set_name(""))
   }}
     slotProps={{ paper: { component: "form" } }}>
-    <DialogTitle> Create Space </DialogTitle>
+    <DialogTitle> {edited ? "Edit Space" : "Create Space"} </DialogTitle>
 
     <DialogContent> <SpaceEdit name={name} on_name_change={set_name} /> </DialogContent>
 
@@ -29,4 +31,4 @@ const AddSpaceDialog = ({ is_open, on_submit, on_cancel }: {
   </Dialog>
 }
 
-export default AddSpaceDialog
+export default SpaceDialog

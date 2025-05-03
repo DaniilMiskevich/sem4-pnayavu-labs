@@ -1,8 +1,7 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material"
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import SparkEdit from "../../components/spark/SparkEdit"
 import { useState } from "react"
 import { SparkRquestDto } from "../../api/SparksApi"
-import { Close, Done } from "@mui/icons-material"
 import Spark from "../../models/Spark"
 
 const SparkDialog = ({ is_open, on_submit, on_cancel, edited }: {
@@ -18,7 +17,7 @@ const SparkDialog = ({ is_open, on_submit, on_cancel, edited }: {
   return <Dialog disableRestoreFocus open={is_open} onClose={on_cancel} onSubmit={e => {
     e.preventDefault();
 
-    on_submit({ name, spectre_names }, space_id)
+    on_submit({ name, spectre_names }, edited ? undefined : space_id)
       .then(() => { set_name(""); set_spectre_names([]); })
   }}
     slotProps={{ paper: { component: "form" } }}>
@@ -32,8 +31,8 @@ const SparkDialog = ({ is_open, on_submit, on_cancel, edited }: {
     </DialogContent>
 
     <DialogActions>
-      <IconButton type="submit"> <Done /> </IconButton>
-      <IconButton onClick={on_cancel}> <Close /> </IconButton>
+      <Button type="submit"> Ok </Button>
+      <Button onClick={on_cancel}> Cancel </Button>
     </DialogActions>
 
   </Dialog>

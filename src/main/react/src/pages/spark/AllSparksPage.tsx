@@ -11,25 +11,30 @@ import SparkDialog from "./SparkDialog";
 const AsyncAllSparks = ({ sparks_promise }: { sparks_promise: Promise<Spark[]> }) => {
   const sparks_api = useDI()["sparks_api"] as SparksApi;
   const [sparks, set_sparks] = useState(use(sparks_promise))
-  const [dialog_state, set_dialog_state] = useState({ is_open: false, edited: undefined as Spark | undefined })
+
+  const [dialog_state, set_dialog_state] = useState({ is_open: false } as { is_open: boolean, edited?: Spark })
+  const dialog_close = () => set_dialog_state(state => ({ ...state, is_open: false }))
+  const dialog_create = () => set_dialog_state({ edited: undefined, is_open: true })
+  const dialog_edit = (edited?: Spark) => set_dialog_state({ edited, is_open: true })
 
   const create_spark = (val: SparkRquestDto, space_id?: number) => sparks_api.create(space_id ?? 0, val)
     .then(new_spark => set_sparks(sparks => sparks.concat(new_spark)))
-    .then(() => set_dialog_state({ is_open: false, edited: undefined }))
+    .then(dialog_close)
+
+  const update_spark = (val: SparkRquestDto) => sparks_api.update(dialog_state.edited!.id, val)
+    .then(updated_spark => set_sparks(sparks => sparks.filter(el => el.id != updated_spark.id).concat(updated_spark)))
+    .then(dialog_close)
 
   const delete_spark = (id: number) => sparks_api.delete(id)
     .then(() => set_sparks(sparks => sparks.filter(el => el.id != id)))
 
   return <Grid container direction="column" spacing="0.6rem" alignItems="center">
-    <Button variant="contained" startIcon={<Add />}
-      onClick={() => set_dialog_state({ is_open: true, edited: undefined })}> Create </Button>
-    <SparkDialog is_open={dialog_state.is_open} edited={dialog_state.edited}
-      on_submit={create_spark}
-      on_cancel={() => set_dialog_state({ is_open: false, edited: undefined })} />
+    <Button variant="contained" startIcon={<Add />} onClick={dialog_create}> Create </Button>
+    <SparkDialog key={dialog_state.edited?.id} is_open={dialog_state.is_open} edited={dialog_state.edited}
+      on_submit={dialog_state.edited ? update_spark : create_spark} on_cancel={dialog_close} />
 
     <SparkTable sparks={sparks}
-      on_edit={id => set_dialog_state({ is_open: true, edited: sparks.find(el => el.id == id) })}
-      on_delete={delete_spark} />
+      on_edit={id => dialog_edit(sparks.find(el => el.id == id))} on_delete={delete_spark} />
   </Grid>
 }
 
