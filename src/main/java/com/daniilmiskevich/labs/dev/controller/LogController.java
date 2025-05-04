@@ -1,19 +1,21 @@
 package com.daniilmiskevich.labs.dev.controller;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import com.daniilmiskevich.labs.dev.registry.AsyncLogFileRegistry;
-import jdk.jfr.Frequency;
 import org.springframework.core.io.Resource;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import com.daniilmiskevich.labs.dev.service.LogService;
 import com.daniilmiskevich.labs.exceptions.exception.InvalidRangeException;
 import jakarta.validation.ValidationException;

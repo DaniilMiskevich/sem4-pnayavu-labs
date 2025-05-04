@@ -1,11 +1,7 @@
 package com.daniilmiskevich.labs.dev.registry;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
-
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,12 +43,15 @@ public class AsyncLogFileRegistry {
         try {
             return Optional.ofNullable(tasks.get(id))
                 .map(CompletableFuture::exceptionNow)
-                .map(e -> e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
+                .map(e -> e instanceof RuntimeException ? (RuntimeException) e
+                    : new RuntimeException(e));
         } catch (IllegalStateException e) {
             return Optional.empty();
         }
     }
 
-    public enum AsyncLogFileStatus { RUNNING, COMPLETED, FAILED }
+    public enum AsyncLogFileStatus {
+        RUNNING, COMPLETED, FAILED
+    }
 
 }

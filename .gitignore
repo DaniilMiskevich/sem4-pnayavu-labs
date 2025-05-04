@@ -37,8 +37,7 @@ out/
 .vscode/
 
 ### database properties ###
-src/main/resources/db_local.properties
-src/main/resources/db_docker.properties
+src/main/resources/local.properties
 docker-compose.yaml
 
 ### logs ###
