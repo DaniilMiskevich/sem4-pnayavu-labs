@@ -7,7 +7,7 @@ on:
 
 
 env:
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository.name }}
 
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
           image: daniilmiskevich/labs
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
-          passwork: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
   # dependency-submission:
   #   runs-on: ubuntu-latest
