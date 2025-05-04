@@ -33,6 +33,7 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: daniilmiskevich/labs
+          tags: v1, latest
           registry: docker.io
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
