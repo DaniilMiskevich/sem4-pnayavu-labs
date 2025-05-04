@@ -34,7 +34,7 @@ jobs:
         with:
           image: daniilmiskevich/labs
           registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
   # dependency-submission:
