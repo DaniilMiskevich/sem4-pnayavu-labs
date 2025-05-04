@@ -38,7 +38,6 @@ out/
 
 ### database properties ###
 src/main/resources/local.properties
-docker-compose.yaml
 
 ### logs ###
 *.log

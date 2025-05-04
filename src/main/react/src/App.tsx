@@ -9,8 +9,10 @@ import { Box } from '@mui/material';
 import MyAppBar from './components/MyAppBar';
 import AllSpacesPage from './pages/space/AllSpacesPage';
 
-const spaces_api: SpacesApi = new MySpacesApi("http://localhost:8080/api/spaces")
-const sparks_api: SparksApi = new MySparksApi("http://localhost:8080/api/sparks")
+// const spaces_api: SpacesApi = new MySpacesApi("http://localhost:8080/api/spaces")
+// const sparks_api: SparksApi = new MySparksApi("http://localhost:8080/api/sparks")
+const spaces_api: SpacesApi = new MySpacesApi("https://labs-r37s.onrender.com/api/spaces")
+const sparks_api: SparksApi = new MySparksApi("https://labs-r37s.onrender.com/api/sparks")
 
 const router = createBrowserRouter([
   { path: "/", element: <AllSparksPage key="/" /> },

@@ -24,7 +24,7 @@ const SpaceTable = ({ spaces, on_edit, on_delete }: {
 
     <TableBody>
       {spaces.sort((a, b) => a.id - b.id).map(space =>
-        <TableRow key={space.id} hover onClick={() => navigate(`/spaces/${space.name}`)}>
+        <TableRow key={space.id} hover onClick={() => navigate(`/spaces/${space.id}`)}>
           <TableCell> {space.name} </TableCell>
           <TableCell align="right"> {space.sparks.length} </TableCell>
           <TableCell align="right">
