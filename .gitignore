@@ -36,10 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
-
 ### database properties ###
 src/main/resources/db_local.properties
 src/main/resources/db_docker.properties
+docker-compose.yaml
 
 ### logs ###
 *.log
