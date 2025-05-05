@@ -1,0 +1,34 @@
+services:
+  app:
+    build: .
+    ports:
+      - '80:8080'
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: '8080'
+      POSTGRES_URL: jdbc:postgresql://db:5432/labs
+      POSTGRES_USER: labs
+      POSTGRES_PASSWORD: localnonprivatepassword
+      SPRING_USER: springuser
+      SPRING_PASSWORD: springpassword
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: labs
+      POSTGRES_PASSWORD: localnonprivatepassword
+      PGUSER: labs
+    volumes:
+      - 'postgres:/var/lib/pgsql/data'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 80s
+
+volumes:
+  postgres:

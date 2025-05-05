@@ -6,26 +6,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LogService {
-
-    private static final Logger logger = LoggerFactory.getLogger(LogService.class);
 
     private final String logPath;
     private final String logName;
@@ -74,7 +65,8 @@ public class LogService {
                 logName,
                 String.format("%s_to_%s",
                     start != null ? start.format(DateTimeFormatter.ISO_DATE) : "any",
-                    end != null ? end.format(DateTimeFormatter.ISO_DATE) : "any")).toFile();
+                    end != null ? end.format(DateTimeFormatter.ISO_DATE) : "any"))
+                .toFile();
             // filteredLog.deleteOnExit();
 
             var writer = new FileWriter(filteredLog);

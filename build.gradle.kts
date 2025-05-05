@@ -37,9 +37,9 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
@@ -53,7 +53,7 @@ dependencies {
 }
 
 tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
-    systemProperty("spring.config.additional-location", "classpath:/credentials.properties")
+    systemProperty("spring.config.additional-location", "classpath:/db_local.properties")
 }
 
 tasks.test {

@@ -36,9 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-
-### credentials ###
-src/main/resources/credentials.properties
+### database properties ###
+src/main/resources/local.properties
 
 ### logs ###
 *.log
