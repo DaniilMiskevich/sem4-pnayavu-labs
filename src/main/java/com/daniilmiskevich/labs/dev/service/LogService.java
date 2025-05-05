@@ -98,7 +98,7 @@ public class LogService {
                         throw new RuntimeException(e);
                     }
                 });
-            Thread.sleep(5 * 1000);
+            Thread.sleep(10 * 1000);
             writer.close();
             return CompletableFuture.completedFuture(filteredLog.toPath());
         } catch (IOException e) {
